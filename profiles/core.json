@@ -1,0 +1,24 @@
+{
+  "name": "core",
+  "description": "General Claude + Codex engineering workspace setup.",
+  "skills": [
+    "engineering-baseline",
+    "ai-setup-manager",
+    "developer-orchestrator",
+    "grill-me",
+    "feature-planner",
+    "implementation-agent",
+    "debugging-investigator",
+    "code-review-swe",
+    "project-memory-curator",
+    "human-ui-designer",
+    "research-brief",
+    "handoff-protocol",
+    "concise-communication"
+  ],
+  "projectKit": "setup/project-kit",
+  "globalFiles": {
+    "codex": "setup/global-files/AGENTS.md",
+    "claude": "setup/global-files/CLAUDE.md"
+  }
+}

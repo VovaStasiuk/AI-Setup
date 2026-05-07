@@ -1,0 +1,3 @@
+Use `ai-setup-manager`.
+
+Standardize the current project's AI setup for Claude and Codex. Locate the installer and run `./install.sh --standardize-project <current-project>` for the first inventory report. Then perform the deep standardization workflow from `ai-setup-manager`: inspect AGENTS.md, CLAUDE.md, .ai, .agents/skills, styleguides, .claude, .codex, README, Makefile, and stack configs; compare content for stale references, duplication, conflicts, missing commands, weak design/styleguide coverage, and Claude/Codex parity gaps. Produce prioritized recommendations with evidence, impact, destination, exact proposed change, and risk. Ask before editing and apply one safe batch at a time.

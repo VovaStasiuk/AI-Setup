@@ -1,0 +1,26 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  installer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck
+        run: shellcheck install.sh scripts/test-install.sh
+
+      - name: dry-run all
+        run: ./install.sh --dry-run --all
+
+      - name: dry-run init-project
+        run: |
+          mkdir -p /tmp/ai-setup-test
+          ./install.sh --dry-run --init-project /tmp/ai-setup-test
+
+      - name: full installer test
+        run: ./scripts/test-install.sh
