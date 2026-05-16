@@ -8,4 +8,5 @@ When helping a user install or customize it:
 - Explain Claude-only, Codex-only, and all-tool options.
 - Preserve existing user files unless the user explicitly asks to overwrite.
 - Use `skill-creator` guidance for any new or modified skill.
+- Use `grill-with-context` for vague workflow/product/design decisions before planning; `grill-me` is only a compatibility alias.
 - Keep changes portable and avoid machine-specific assumptions.

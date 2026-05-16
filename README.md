@@ -15,6 +15,7 @@ This project installs a layered AI workflow that works with Claude Code, Codex, 
   - `ai-setup-manager`
   - `engineering-baseline`
   - `developer-orchestrator`
+  - `grill-with-context`
   - `grill-me`
   - `feature-planner`
   - `implementation-agent`
@@ -34,6 +35,7 @@ This project installs a layered AI workflow that works with Claude Code, Codex, 
   - `/ai-setup-standardize`
   - `/ai-setup-update`
   - `/plan-feature`
+  - `/grill-with-context`
   - `/grill-me`
   - `/implement`
   - `/review-code`
@@ -188,7 +190,7 @@ Existing files are not overwritten by default. Conflicting files are skipped unl
 
 ```text
 Use feature-planner to plan this.
-Use grill-me to pressure-test this idea before we plan.
+Use grill-with-context to pressure-test this idea before we plan.
 Use implementation-agent to implement this.
 Use code-review-swe to review this.
 Use human-ui-designer to design this.

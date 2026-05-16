@@ -15,3 +15,5 @@ Project instructions override global skills. Read this file first, then load onl
 - Keep changes scoped to the request.
 - Verify with the narrowest meaningful test/check.
 - If design direction is unclear, ask before guessing.
+- For vague features or product/design decisions, use global `grill-with-context`
+  before planning and ask before writing project doc updates.

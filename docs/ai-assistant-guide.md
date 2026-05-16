@@ -124,6 +124,10 @@ Bad global skill content:
 - "always use this company's design"
 - project-specific commands
 
+For vague feature, product, architecture, or design requests, use
+`grill-with-context` before planning. It should clarify shared language from
+existing project docs/code when available and ask before proposing file updates.
+
 ## Adding skills
 
 Use `skill-creator` principles:
@@ -138,6 +142,7 @@ After adding a skill:
 
 - Add it to `profiles/core.json` if broadly useful.
 - Add a Claude command only if there is a clear slash-command workflow.
+- Update README/workflow examples if the new skill changes the recommended path.
 - Run installer dry-runs.
 
 ## Answering user questions

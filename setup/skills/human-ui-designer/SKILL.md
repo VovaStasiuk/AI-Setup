@@ -28,12 +28,25 @@ If the source is missing, weak, or conflicting, do not guess. Ask whether to cre
 - a design from user-provided references/screenshots
 - a theme discovery pass using reference DESIGN.md collections such as getdesign.md or awesome-design-md
 
+## Existing UI extraction
+
+When the project has existing UI, identify 2-5 golden examples before designing:
+
+- one nearby screen in the same feature/domain
+- reusable primitives/components
+- one list/table pattern when the new UI lists data
+- one form/modal/drawer pattern when the new UI collects input
+- one empty/loading/error state pattern when relevant
+
+Extract the reusable rules: density, spacing, typography, color roles, borders, shadows, icon treatment, action hierarchy, and state behavior. Do not copy feature-specific content or old mockups as global style.
+
 ## Design contract before coding
 
 For UI-heavy work, produce or update a contract covering:
 
 - audience and workflow
 - visual direction and density
+- reference priority and golden examples to follow
 - layout, spacing, typography, and color roles
 - component choices and interaction states
 - loading, empty, error, disabled, and responsive states
@@ -71,6 +84,14 @@ For raster image assets, prefer Codex imagegen when available. In Claude, do not
 After implementation, verify with screenshots when practical. Compare the result to the contract and fix visible drift.
 
 For detailed DESIGN.md templates, read `references/design-md-template.md`.
+
+For design review of an existing implementation, check:
+
+- whether project design sources and golden examples were used
+- whether project primitives/tokens were reused
+- whether the UI visually fits nearby screens
+- whether loading, empty, error, disabled, permission, and overflow states are covered
+- whether screenshots were checked and what visible drift remains
 
 ## Design completion
 

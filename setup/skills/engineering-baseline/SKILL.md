@@ -14,6 +14,9 @@ Use this as the default behavior layer for software work before selecting a spec
 - Preserve local architecture, style, commands, and naming unless there is a concrete reason not to.
 - Make small, reversible, testable changes.
 - Add abstractions only when they remove real complexity or match an established project pattern.
+- Do not add speculative configurability, extension points, or future-proofing that the task did not require.
+- Every changed line should trace back to the user's request, the agreed plan, or cleanup made necessary by your own change.
+- If an approach is much larger than needed, simplify it before presenting it as done.
 - Treat tests, screenshots, logs, types, and source evidence as stronger than intuition.
 - State uncertainty and risky assumptions directly.
 - Do not self-review critical agent-authored work when another review route is available.
@@ -41,6 +44,8 @@ Be respectful, but do not dilute important criticism.
 - For handoffs, include goal, constraints, changed files, commands run, remaining risks, and requested review focus.
 - Before finishing, verify with the narrowest meaningful check and say what could not be verified.
 - When reusable project knowledge is discovered, use `project-memory-curator` to propose a concise, evidenced update before writing it.
+- Mention unrelated cleanup opportunities instead of doing drive-by refactors.
+- For multi-step work, define success criteria and the intended verification path before implementation.
 
 ## Evidence standard
 

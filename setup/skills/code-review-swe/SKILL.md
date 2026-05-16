@@ -17,6 +17,14 @@ Use `engineering-baseline` first. Prefer an external model/tool for agent-author
 - If no findings, say so and name test gaps or uncertainty.
 - If review reveals a reusable project rule or repeated failure pattern, suggest a `project-memory-curator` update after the findings.
 
+For UI/frontend diffs, include a design review lens when relevant:
+
+- Did the change follow project `DESIGN.md` or another declared design source?
+- Did it reuse project primitives, tokens, and nearby patterns?
+- Does it fit visually next to existing screens?
+- Are loading, empty, error, disabled, permission, overflow, and responsive states handled when relevant?
+- Was screenshot verification done, or is it listed as not reviewed?
+
 Do not invent findings. If evidence is insufficient, ask for the diff/files/tests or state the review is limited.
 
 ## Review completion

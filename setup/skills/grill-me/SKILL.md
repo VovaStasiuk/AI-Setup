@@ -1,13 +1,13 @@
 ---
 name: grill-me
-description: Interview the user relentlessly about a plan, feature, architecture, design, product idea, migration, or decision until shared understanding is reached. Use when the user says "grill me", wants to stress-test an idea before planning, needs requirements discovery, or has a vague/high-stakes direction that should be clarified before implementation.
+description: Use when the user says "grill me" or invokes the older grill-me workflow. Prefer the docs-aware grill-with-context workflow for project, product, architecture, design, migration, and feature clarification.
 ---
 
 # Grill Me
 
-Use `engineering-baseline` first. This skill pressure-tests intent before a plan or implementation exists.
+This is a compatibility alias. Use `engineering-baseline`, then use `grill-with-context`.
 
-## Rules
+If `grill-with-context` is unavailable, fall back to this minimal behavior:
 
 - Apply the engineering-baseline critical thinking standard: do not assume the idea is good.
 - Ask one focused question at a time.
@@ -23,5 +23,7 @@ Use `engineering-baseline` first. This skill pressure-tests intent before a plan
 End with:
 
 - Decisions confirmed
+- Shared language / terms clarified
 - Open questions
+- Candidate doc updates, if any, with recommended destination
 - Recommended next route: `feature-planner`, `human-ui-designer`, `research-brief`, `implementation-agent`, or external review/handoff

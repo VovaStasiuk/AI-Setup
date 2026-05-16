@@ -48,6 +48,7 @@ Use `AGENTS.md` as an index. Do not paste every rule into it.
 Examples:
 
 ```text
+Use grill-with-context to pressure-test this idea before we plan.
 Use feature-planner to plan this feature.
 Use implementation-agent to implement the approved plan.
 Use code-review-swe to review this diff.

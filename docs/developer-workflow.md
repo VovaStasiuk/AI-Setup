@@ -27,7 +27,8 @@ Project files override global skills.
 | `ai-setup-manager` | Manage install, update, project init, audits, or source deletion questions | Safe install/project setup guidance |
 | `engineering-baseline` | Any non-trivial engineering task | Simple, scoped, evidence-driven behavior |
 | `developer-orchestrator` | More than one route/tool may apply | Route recommendation and fallback |
-| `grill-me` | Idea is vague or needs pressure-testing | Decisions, open questions, next route |
+| `grill-with-context` | Idea is vague or needs pressure-testing, especially inside a codebase | Decisions, shared language, candidate doc updates, open questions, next route |
+| `grill-me` | Backward-compatible alias for old "grill me" prompts | Routes to `grill-with-context` when available |
 | `feature-planner` | Feature/change needs a spec or plan | Decision-complete plan with tests |
 | `implementation-agent` | Plan or task is ready to build | Scoped implementation + verification |
 | `debugging-investigator` | User reports/pastes an error, failing test, or console output | Evidence-based diagnosis and next check |
@@ -45,7 +46,7 @@ Project files override global skills.
 
 ```text
 engineering-baseline
--> grill-me
+-> grill-with-context
 -> feature-planner
 -> plan review
 -> implementation-agent
@@ -87,6 +88,7 @@ If the same failure happens twice, route to rescue when available.
 engineering-baseline
 -> human-ui-designer
 -> design-source gate
+-> identify golden local examples when existing UI is available
 -> theme discovery if palette/typography/direction is unclear
 -> DESIGN.md or feature DESIGN.md if needed
 -> design contract
@@ -96,6 +98,8 @@ engineering-baseline
 ```
 
 The agent must not guess visual style when project design direction is unclear.
+
+When existing UI is available, the agent should extract rules from 2-5 golden local examples before designing. This prevents generic AI-looking screens and avoids treating old mockups or external screenshots as global style.
 
 For theme discovery, the agent may suggest 3-5 directions inspired by getdesign.md or awesome-design-md, including palette, typography, density, component feel, and anti-patterns. The chosen direction must be converted into `DESIGN.md` before coding.
 
@@ -163,7 +167,10 @@ Keep `AGENTS.md` and `CLAUDE.md` as indexes. Put details in `.ai/` files.
 - Keep global skills reusable and project-neutral.
 - Put stack commands and styleguide details in project files.
 - Use `project-memory-curator` to propose, not silently write, reusable project knowledge.
-- Use `concise-communication` only when shorter output helps; do not compress away risk.
+- Default communication is concise, direct, and no-fluff.
+- Use `concise-communication` only when the user asks for brevity or the answer is simple enough that compression will not hide risk.
+- Do not use Caveman-lite by default.
+- Do not compress away planning, review, security, debugging, verification, skipped work, or production-risk nuance.
 
 ## Critical Thinking
 
@@ -207,7 +214,7 @@ For implementation work, run a local final review pass before the final response
 `/ai-setup-standardize` should not stop at the shell report. The AI must inspect the actual instruction files, skills, styleguides, and `.ai` files, then produce prioritized recommendations with evidence, impact, destination, exact proposed change, and risk before editing.
 
 ```text
-Use grill-me to pressure-test this idea before we plan.
+Use grill-with-context to pressure-test this idea before we plan.
 ```
 
 ```text

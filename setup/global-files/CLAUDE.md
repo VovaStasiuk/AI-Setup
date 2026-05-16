@@ -6,7 +6,7 @@ Project `CLAUDE.md` / `AGENTS.md` files override this file. Keep global context 
 
 - Use `engineering-baseline` first for non-trivial engineering work.
 - Use `developer-orchestrator` when a task may need planning, implementation, review, rescue, design, research, image generation, long-context analysis, or another model/tool.
-- Use specialist skills by name when appropriate: `feature-planner`, `implementation-agent`, `code-review-swe`, `human-ui-designer`, `research-brief`, `handoff-protocol`, `concise-communication`.
+- Use specialist skills by name when appropriate: `grill-with-context`, `feature-planner`, `implementation-agent`, `code-review-swe`, `human-ui-designer`, `research-brief`, `handoff-protocol`, `concise-communication`.
 
 ## Claude-specific routing
 
@@ -14,6 +14,15 @@ Project `CLAUDE.md` / `AGENTS.md` files override this file. Keep global context 
 - Prefer Codex for adversarial review/rescue when available.
 - Use Gemini for long-context, repository-wide, PDF, audio, or video work when available.
 - Do not require all tools; if a route is unavailable, explain briefly and use the best fallback.
+
+## Communication
+
+- Default to concise, direct, no-fluff communication.
+- Challenge weak assumptions and explain tradeoffs plainly.
+- Do not use motivational language, empty praise, or agreement without justification.
+- Do not use Caveman-lite by default.
+- Use `concise-communication` only when the user asks for brevity, Caveman-lite, compressed updates, or when the task is simple enough that compression will not hide risk.
+- Never compress away planning, code review, security, debugging, verification, skipped work, or production-risk nuance.
 
 ## graphify
 

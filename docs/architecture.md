@@ -10,7 +10,7 @@ These skills contain reusable behavior:
 
 - engineering taste
 - routing rules
-- requirements interrogation
+- project-aware requirements interrogation
 - planning workflow
 - implementation workflow
 - review workflow
@@ -19,6 +19,10 @@ These skills contain reusable behavior:
 - handoff protocol
 
 They should not contain project-specific architecture, commands, or styleguide details.
+
+`grill-with-context` is the default interrogation workflow. It may read project
+docs and nearby code to clarify terms before planning, but it should only
+propose durable doc updates and wait for approval before writing.
 
 ## Tool Layer
 

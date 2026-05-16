@@ -64,6 +64,13 @@ Adjust these first:
 
 Avoid putting project-specific stack details into global skills.
 
+### Clarify a vague feature or decision
+
+Use `grill-with-context` before planning. It should inspect relevant project
+docs/code, ask one focused question at a time, clarify shared language, and ask
+whether to propose doc updates at the end. Keep `grill-me` only as a backward
+compatible alias.
+
 ### Add a new skill
 
 Use `skill-creator` principles:
@@ -99,6 +106,7 @@ Also check:
 - every skill has `SKILL.md`
 - `profiles/core.json` lists installed core skills
 - README examples still match installer options
+- Claude command wrappers match their target skill names
 - no `.DS_Store`, secrets, local absolute machine-specific assumptions, or generated junk
 
 ## Useful paths
