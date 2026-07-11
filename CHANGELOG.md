@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Added `tdd-seams` to guide test-first implementation through public seams and avoid weak tests.
+- Strengthened `implementation-agent` to use seam-first, focused verification loops for non-trivial work.
+- Upgraded `code-review-swe` with fixed-point, spec-axis, standards-axis, and code-smell baseline guidance.
+- Made local `.ai/tickets/NN-title.md` ticket output concrete in `to-tickets`.
+- Added `to-spec` and `/to-spec` to turn clarified conversations or approved plans into stable specs.
+- Added `to-tickets` and `/to-tickets` to turn specs, PRDs, and backlogs into small vertical implementation tickets with blockers.
+- Added project workflow, issue-tracker, domain, and ticket starter files to the project kit.
+- Added `ai-workflow-router` and `/ai-workflow` to route users to the right setup, planning, implementation, review, debug, design, research, memory, or handoff workflow.
+- Added `/ai-setup-configure-project` for AI-guided project starter file configuration after init.
+- Added repository metadata validation for skills, profiles, command wrappers, project-kit files, and portable global bootstraps.
+- Synced `pencil-design` into the core profile skill list.
+- Removed the optional `graphify` reference from the portable Claude global bootstrap.
+- Treated `CLAUDE.md` files that explicitly wrap `AGENTS.md` as intentional in project standardization reports.
 - Added `LICENSE` (MIT), `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`.
 - Added `.editorconfig`, GitHub issue/PR templates, and CI workflow.
 - README: license badge, alpha status note, clone step, contributing/license sections.

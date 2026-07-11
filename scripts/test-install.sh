@@ -2,12 +2,19 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TMP_ROOT="$(mktemp -d)"
+TMP_BASE="${TMPDIR:-/tmp}"
+if [[ ! -d "$TMP_BASE" || ! -w "$TMP_BASE" ]]; then
+  TMP_BASE="/tmp"
+fi
+TMP_ROOT="$(mktemp -d "$TMP_BASE/ai-setup-test.XXXXXX")"
 trap 'rm -rf "$TMP_ROOT"' EXIT
 
 export HOME="$TMP_ROOT/home"
 PROJECT="$TMP_ROOT/project"
 mkdir -p "$HOME" "$PROJECT"
+
+echo "test: validate repo"
+bash "$ROOT_DIR/scripts/validate-repo.sh"
 
 echo "test: install all"
 "$ROOT_DIR/install.sh" --all --no-global-files

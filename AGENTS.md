@@ -52,11 +52,16 @@ Recommend:
 
 If the project already has `AGENTS.md`, `CLAUDE.md`, or `.ai/`, explain that existing files are skipped unless `--force` is used. Do not recommend `--force` until the user has reviewed the existing files.
 
+After init, recommend `/ai-setup-configure-project` or use `ai-setup-manager` to inspect the repo and draft project-specific `.ai` updates before writing.
+
 ### Customize for a team
 
 Adjust these first:
 
 - `setup/project-kit/.ai/commands.md`
+- `setup/project-kit/.ai/agent-workflow.md`
+- `setup/project-kit/.ai/issue-tracker.md`
+- `setup/project-kit/.ai/domain.md`
 - `setup/project-kit/.ai/tech-stack.md`
 - `setup/project-kit/.ai/DESIGN.md`
 - `setup/global-files/AGENTS.md`
@@ -97,6 +102,7 @@ Create a JSON file in `profiles/` and document it in `docs/profiles.md`. Planned
 After changes:
 
 ```bash
+bash scripts/validate-repo.sh
 ./install.sh --dry-run --all
 ./install.sh --dry-run --init-project /tmp/ai-setup-test
 ```
@@ -107,6 +113,7 @@ Also check:
 - `profiles/core.json` lists installed core skills
 - README examples still match installer options
 - Claude command wrappers match their target skill names
+- project kit workflow/tracker/domain/spec/ticket files are present
 - no `.DS_Store`, secrets, local absolute machine-specific assumptions, or generated junk
 
 ## Useful paths

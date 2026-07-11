@@ -22,20 +22,26 @@ Thanks for your interest. AI Setup is an installer/template project for portable
 
    It uses a temporary `HOME` so your real config stays untouched.
 
-4. Lint the installer:
+4. Validate repository metadata:
 
    ```bash
-   shellcheck install.sh scripts/test-install.sh
+   bash scripts/validate-repo.sh
    ```
 
-5. Verify dry-run output for any installer flag you touched:
+5. Lint the installer:
+
+   ```bash
+   shellcheck install.sh scripts/test-install.sh scripts/validate-repo.sh
+   ```
+
+6. Verify dry-run output for any installer flag you touched:
 
    ```bash
    ./install.sh --dry-run --all
    ./install.sh --dry-run --init-project /tmp/ai-setup-test
    ```
 
-6. Update `CHANGELOG.md` under the unreleased section.
+7. Update `CHANGELOG.md` under the unreleased section.
 
 ## Adding a Skill
 

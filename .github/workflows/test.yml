@@ -11,8 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: validate repo metadata
+        run: bash scripts/validate-repo.sh
+
       - name: shellcheck
-        run: shellcheck install.sh scripts/test-install.sh
+        run: shellcheck install.sh scripts/test-install.sh scripts/validate-repo.sh
 
       - name: dry-run all
         run: ./install.sh --dry-run --all

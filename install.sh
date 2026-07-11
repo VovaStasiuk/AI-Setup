@@ -324,6 +324,12 @@ is_placeholder_file() {
   grep -Eq 'fill in|Describe what|Product type:|# fill in' "$path"
 }
 
+is_claude_agents_wrapper() {
+  local path="$1"
+  [[ -f "$path" ]] || return 1
+  grep -Eq 'AGENTS\.md' "$path"
+}
+
 audit_project() {
   local project="$1"
   local issues=0
@@ -339,11 +345,15 @@ audit_project() {
     "AGENTS.md"
     "CLAUDE.md"
     ".ai/project-context.md"
+    ".ai/agent-workflow.md"
+    ".ai/issue-tracker.md"
+    ".ai/domain.md"
     ".ai/tech-stack.md"
     ".ai/commands.md"
     ".ai/DESIGN.md"
     ".ai/styleguide.md"
     ".ai/specs"
+    ".ai/tickets"
     ".ai/decisions"
   )
 
@@ -356,7 +366,7 @@ audit_project() {
     fi
   done
 
-  for rel in ".ai/project-context.md" ".ai/tech-stack.md" ".ai/commands.md" ".ai/DESIGN.md"; do
+  for rel in ".ai/project-context.md" ".ai/agent-workflow.md" ".ai/issue-tracker.md" ".ai/domain.md" ".ai/tech-stack.md" ".ai/commands.md" ".ai/DESIGN.md"; do
     if is_placeholder_file "$project/$rel"; then
       log "weak: $rel still appears to contain starter placeholders"
       issues=$((issues + 1))
@@ -413,22 +423,30 @@ standardize_project() {
   log ""
   log "4. Likely gaps"
   [[ -f "$project/.ai/project-context.md" ]] || { log "gap: .ai/project-context.md missing"; issues=$((issues + 1)); }
+  [[ -f "$project/.ai/agent-workflow.md" ]] || { log "gap: .ai/agent-workflow.md missing"; issues=$((issues + 1)); }
+  [[ -f "$project/.ai/issue-tracker.md" ]] || { log "gap: .ai/issue-tracker.md missing"; issues=$((issues + 1)); }
+  [[ -f "$project/.ai/domain.md" ]] || { log "gap: .ai/domain.md missing"; issues=$((issues + 1)); }
   [[ -f "$project/.ai/tech-stack.md" ]] || { log "gap: .ai/tech-stack.md missing"; issues=$((issues + 1)); }
   [[ -f "$project/.ai/commands.md" ]] || { log "gap: .ai/commands.md missing"; issues=$((issues + 1)); }
   [[ -f "$project/.ai/DESIGN.md" ]] || { log "gap: .ai/DESIGN.md missing"; issues=$((issues + 1)); }
   [[ -d "$project/.ai/specs" ]] || { log "gap: .ai/specs missing"; issues=$((issues + 1)); }
+  [[ -d "$project/.ai/tickets" ]] || { log "gap: .ai/tickets missing"; issues=$((issues + 1)); }
   [[ -d "$project/.ai/decisions" ]] || { log "gap: .ai/decisions missing"; issues=$((issues + 1)); }
 
   if [[ -f "$project/AGENTS.md" && -f "$project/CLAUDE.md" ]] && ! cmp -s "$project/AGENTS.md" "$project/CLAUDE.md"; then
-    log "gap: AGENTS.md and CLAUDE.md differ; review whether this is intentional"
-    issues=$((issues + 1))
+    if is_claude_agents_wrapper "$project/CLAUDE.md"; then
+      log "ok: CLAUDE.md differs as an AGENTS.md wrapper"
+    else
+      log "gap: AGENTS.md and CLAUDE.md differ; review whether this is intentional"
+      issues=$((issues + 1))
+    fi
   fi
 
   log ""
   log "5. Recommended standard structure"
   log "AGENTS.md: shared index for all agents"
   log "CLAUDE.md: mirror of AGENTS.md or small Claude-specific wrapper"
-  log ".ai/: canonical project context, commands, design, specs, decisions"
+  log ".ai/: canonical project context, workflow, tracker rules, domain, commands, design, specs, tickets, decisions"
   log ".agents/skills/: project-specific skills and stack/style guides"
   log ".claude/: Claude-only settings/commands only"
   log ".codex/: Codex-only config only"

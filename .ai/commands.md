@@ -3,10 +3,19 @@
 ## Validate installer
 
 ```bash
+bash scripts/validate-repo.sh
 ./install.sh --doctor
 ./install.sh --dry-run --all --no-global-files --no-commands
 ./install.sh --dry-run --init-project /tmp/ai-setup-test
 ./install.sh --audit-project .
+```
+
+## Workflow commands
+
+```text
+/ai-workflow what should I use?
+/to-spec turn this conversation into a spec
+/to-tickets split this spec into implementation tickets
 ```
 
 ## Install globally

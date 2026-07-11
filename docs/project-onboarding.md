@@ -16,15 +16,39 @@ Use this when adding AI Setup to an existing project.
 
 Existing files are skipped by default. Use `--force` only after reviewing diffs.
 
-## 3. Fill Project Facts
+## 3. Configure Project Facts
+
+In Claude, use:
+
+```text
+/ai-setup-configure-project
+```
+
+The assistant should inspect existing docs, configs, source layout, commands, design sources, and styleguides, then draft updates before writing.
+
+For Codex or another assistant, ask:
+
+```text
+Use ai-setup-manager to configure this project after AI Setup init.
+```
+
+Review the proposed changes before approving writes.
+
+## 4. Fill Or Review Project Files
 
 Update:
 
 - `.ai/project-context.md`
+- `.ai/agent-workflow.md`
+- `.ai/issue-tracker.md`
+- `.ai/domain.md`
 - `.ai/tech-stack.md`
 - `.ai/commands.md`
+- `.ai/styleguide.md`
 
-## 4. Define Design Source
+The project kit includes starter Django and React styleguides under `.agents/skills/styleguides/`. Keep only the sections that match the project stack and customize them from real code patterns.
+
+## 5. Define Design Source
 
 Update `.ai/DESIGN.md`.
 
@@ -39,18 +63,20 @@ If not, answer:
 - What should the UI avoid?
 - What components already exist?
 
-## 5. Keep AGENTS.md Small
+## 6. Keep AGENTS.md Small
 
 Use `AGENTS.md` as an index. Do not paste every rule into it.
 
-## 6. Use The Workflows
+## 7. Use The Workflows
 
 Examples:
 
 ```text
 Use grill-with-context to pressure-test this idea before we plan.
 Use feature-planner to plan this feature.
+Use to-spec to turn the clarified plan into a spec.
+Use to-tickets to split the spec into implementation tickets.
 Use implementation-agent to implement the approved plan.
-Use code-review-swe to review this diff.
+Use code-review-swe to review this diff against the ticket and project standards.
 Use human-ui-designer to design this page.
 ```

@@ -46,6 +46,14 @@ Project init:
 ./install.sh --init-project /path/to/project
 ```
 
+Project configuration after init:
+
+```text
+/ai-setup-configure-project
+```
+
+Use this after project init to inspect the repo and draft `.ai` project facts, commands, design, and styleguide updates. The assistant must ask before writing and must mark inferred-but-unverified commands as candidates.
+
 Health check:
 
 ```bash
@@ -105,6 +113,8 @@ Before project init, inspect:
 
 If files exist, merge manually or let installer skip them. Avoid `--force` unless the user explicitly wants replacement.
 
+After project init, use `/ai-setup-configure-project` or ask an assistant to use `ai-setup-manager` to configure the project. It should inspect before asking, draft updates with evidence, and preserve unknowns as `TODO` or `Unknown` instead of guessing.
+
 ## Customization rules
 
 Global skills should remain reusable across projects. Put stack-specific rules in project files or future profiles.
@@ -143,9 +153,18 @@ After adding a skill:
 - Add it to `profiles/core.json` if broadly useful.
 - Add a Claude command only if there is a clear slash-command workflow.
 - Update README/workflow examples if the new skill changes the recommended path.
+- Run `bash scripts/validate-repo.sh` to catch profile, README, command, and project-kit drift.
 - Run installer dry-runs.
 
 ## Answering user questions
+
+If the user asks "what workflow should I use?", recommend `/ai-workflow` or use `ai-workflow-router` directly.
+
+If the user asks to turn a conversation or approved plan into a stable spec, recommend `/to-spec` or use `to-spec` directly.
+
+If the user asks to split a plan, spec, PRD, or backlog into tickets, recommend `/to-tickets` or use `to-tickets` directly. It should create vertical implementation tickets with acceptance criteria, blocking edges, and verification, not separate frontend/backend chores unless the dependency is real.
+
+If the user asks to implement executable behavior test-first, or asks where tests should go, use `tdd-seams` through `implementation-agent`: identify the public seam, add or name the focused failing check when practical, then implement one vertical slice.
 
 If the user asks "what should I install?", recommend:
 

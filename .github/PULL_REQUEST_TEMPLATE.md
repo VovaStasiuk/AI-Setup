@@ -13,7 +13,8 @@ What changed and why.
 
 ## Verification
 
-- [ ] `shellcheck install.sh scripts/test-install.sh`
+- [ ] `bash scripts/validate-repo.sh`
+- [ ] `shellcheck install.sh scripts/test-install.sh scripts/validate-repo.sh`
 - [ ] `./install.sh --dry-run --all`
 - [ ] `./scripts/test-install.sh`
 - [ ] `CHANGELOG.md` updated

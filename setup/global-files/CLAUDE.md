@@ -5,8 +5,9 @@ Project `CLAUDE.md` / `AGENTS.md` files override this file. Keep global context 
 ## Default stack
 
 - Use `engineering-baseline` first for non-trivial engineering work.
+- Use `ai-workflow-router` when the user asks what workflow, skill, or command to use next.
 - Use `developer-orchestrator` when a task may need planning, implementation, review, rescue, design, research, image generation, long-context analysis, or another model/tool.
-- Use specialist skills by name when appropriate: `grill-with-context`, `feature-planner`, `implementation-agent`, `code-review-swe`, `human-ui-designer`, `research-brief`, `handoff-protocol`, `concise-communication`.
+- Use specialist skills by name when appropriate: `grill-with-context`, `feature-planner`, `to-spec`, `to-tickets`, `implementation-agent`, `tdd-seams`, `debugging-investigator`, `code-review-swe`, `human-ui-designer`, `research-brief`, `handoff-protocol`, `concise-communication`.
 
 ## Claude-specific routing
 
@@ -23,8 +24,3 @@ Project `CLAUDE.md` / `AGENTS.md` files override this file. Keep global context 
 - Do not use Caveman-lite by default.
 - Use `concise-communication` only when the user asks for brevity, Caveman-lite, compressed updates, or when the task is simple enough that compression will not hide risk.
 - Never compress away planning, code review, security, debugging, verification, skipped work, or production-risk nuance.
-
-## graphify
-
-- **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
-- When the user types `/graphify`, invoke the Skill tool with `skill: "graphify"` before doing anything else.

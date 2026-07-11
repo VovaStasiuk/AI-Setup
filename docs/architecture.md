@@ -42,11 +42,16 @@ Projects get a tiny local kit:
 - `AGENTS.md`
 - `CLAUDE.md`
 - `.ai/project-context.md`
+- `.ai/agent-workflow.md`
+- `.ai/issue-tracker.md`
+- `.ai/domain.md`
 - `.ai/tech-stack.md`
 - `.ai/styleguide.md`
 - `.ai/DESIGN.md`
 - `.ai/commands.md`
+- `.agents/skills/styleguides/`
 - `.ai/specs/`
+- `.ai/tickets/`
 - `.ai/decisions/`
 
 Project files override global skills.

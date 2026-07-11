@@ -4,6 +4,8 @@
 
 - Claude + Superpowers: best for large, vague, collaborative product/spec planning.
 - Custom `feature-planner`: best for Codex sessions, smaller features, or when Superpowers is unavailable.
+- `to-spec`: best when the conversation or approved plan should become a stable implementation contract.
+- `to-tickets`: best after planning/spec work when implementation needs independently reviewable vertical tickets with blockers.
 - Codex: best for adversarial plan review and feasibility critique.
 - Gemini: useful before planning when the input is huge, multimedia, or whole-repo context.
 
@@ -11,11 +13,13 @@
 
 - Codex: strong for repo-grounded edits, tests, reviews, and patch discipline.
 - Claude + Superpowers execution: strong when a Superpowers plan exists and Claude Code is the active workspace.
+- `tdd-seams`: best inside implementation when executable behavior needs a public test seam and focused feedback loop.
 - Project skills override global defaults for framework-specific work.
 
 ## Review
 
 - Codex: default adversarial reviewer for code, plans, risky paths, and agent self-review.
+- `code-review-swe`: best for fixed-point review against both spec/ticket and project standards.
 - Claude: acceptable for explaining code or reviewing user-authored non-code prose.
 - Gemini: useful for huge diffs/docs only when long context matters more than patch-level precision.
 

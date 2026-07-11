@@ -11,13 +11,16 @@ Use `engineering-baseline` first. Use `developer-orchestrator` when another mode
 
 1. Identify the source of truth: user request, issue, spec, plan, or failing test.
 2. Inspect project instructions, commands, existing code, and tests.
-3. Recommend an execution route and ask when more than one major route is available.
-4. Implement in small scoped changes.
-5. Run the narrowest meaningful verification, then broader checks if risk warrants it.
-6. Summarize behavior changed, files touched, checks run, and remaining risk.
-7. If implementation reveals a reusable project pattern or command gotcha, propose a `project-memory-curator` update with evidence.
+3. If the work is too broad for one focused pass, route to `to-spec` or `to-tickets` before editing.
+4. For non-trivial executable behavior, use `tdd-seams`: identify the public seam, write or name the focused failing check, then implement one vertical slice.
+5. Recommend an execution route and ask when more than one major route is available.
+6. Implement in small scoped changes.
+7. Run the narrowest meaningful verification, then broader checks if risk warrants it.
+8. Summarize behavior changed, files touched, checks run, and remaining risk.
+9. If implementation reveals a reusable project pattern or command gotcha, propose a `project-memory-curator` update with evidence.
 
 Do not say tests/build/lint pass unless they were run and passed. If checks were skipped or failed, report that directly.
+If test-first work was skipped, state why and what verification replaced it.
 
 ## Completion contract
 
@@ -49,10 +52,13 @@ Do not call the task done if any required scope remains unimplemented.
 
 For features spanning backend and frontend, implement vertical slices by default:
 
-1. Build the smallest backend contract needed for one user-verifiable workflow.
-2. Build the frontend path that consumes it.
-3. Include loading, empty, error, and basic permission/state handling needed for that slice.
-4. Verify the slice end-to-end before starting the next slice.
-5. Ask for direction check when the product behavior or UI could drift.
+1. Choose the user-verifiable workflow slice.
+2. Identify the highest practical seam that proves that slice.
+3. Add or name the focused failing check at that seam when feasible.
+4. Build the smallest backend contract needed for the slice.
+5. Build the frontend path that consumes it.
+6. Include loading, empty, error, and basic permission/state handling needed for that slice.
+7. Verify the slice end-to-end before starting the next slice.
+8. Ask for direction check when the product behavior or UI could drift.
 
 Do not build all APIs first unless the plan documents why a horizontal backend-first phase is necessary.

@@ -24,15 +24,19 @@ Project files override global skills.
 
 | Skill | Use When | Output |
 |---|---|---|
-| `ai-setup-manager` | Manage install, update, project init, audits, or source deletion questions | Safe install/project setup guidance |
+| `ai-workflow-router` | User asks what workflow, skill, or command to use | Recommended route, exact command/prompt, fallback |
+| `ai-setup-manager` | Manage install, update, project init/configuration, audits, or source deletion questions | Safe install/project setup guidance |
 | `engineering-baseline` | Any non-trivial engineering task | Simple, scoped, evidence-driven behavior |
 | `developer-orchestrator` | More than one route/tool may apply | Route recommendation and fallback |
 | `grill-with-context` | Idea is vague or needs pressure-testing, especially inside a codebase | Decisions, shared language, candidate doc updates, open questions, next route |
 | `grill-me` | Backward-compatible alias for old "grill me" prompts | Routes to `grill-with-context` when available |
 | `feature-planner` | Feature/change needs a spec or plan | Decision-complete plan with tests |
+| `to-spec` | Conversation or approved plan needs a stable spec | Decision-complete spec with assumptions, testing decisions, and next step |
+| `to-tickets` | Spec/plan/PRD/backlog needs small implementation tickets | Ordered tracer-bullet tickets with blocking edges and verification |
 | `implementation-agent` | Plan or task is ready to build | Scoped implementation + verification |
+| `tdd-seams` | Implementation needs test-first feedback or a test seam decision | Public seam, focused failing check, narrow verification |
 | `debugging-investigator` | User reports/pastes an error, failing test, or console output | Evidence-based diagnosis and next check |
-| `code-review-swe` | Code/plan/diff needs review | Findings first, risks, test gaps |
+| `code-review-swe` | Code/plan/diff needs review | Findings first, spec axis, standards axis, test gaps |
 | `project-memory-curator` | Reusable project knowledge should be saved | Approved, sourced updates to project docs/styleguides |
 | `human-ui-designer` | UI/design work or polish | Design contract + screenshot QA loop |
 | `pencil-design` | Pencil MCP or `.pen` files are involved | Editable mockup/design-to-code workflow |
@@ -42,14 +46,26 @@ Project files override global skills.
 
 ## Standard Flows
 
+### Choose A Workflow
+
+```text
+engineering-baseline
+-> ai-workflow-router
+-> recommended specialist skill or command
+```
+
+Use this when the user asks what to do next, which command to run, or which skill fits a request.
+
 ### Vague Feature Idea
 
 ```text
 engineering-baseline
 -> grill-with-context
--> feature-planner
+-> to-spec
+-> to-tickets if the spec is too large for one implementation pass
 -> plan review
 -> implementation-agent
+-> tdd-seams inside implementation for executable behavior
 -> code-review-swe
 ```
 
@@ -60,7 +76,10 @@ engineering-baseline
 -> developer-orchestrator
 -> feature-planner
 -> vertical slice plan for full-stack work
+-> to-spec for a stable implementation contract
+-> to-tickets for tracker-ready or multi-agent slices
 -> implementation-agent
+-> tdd-seams inside implementation for executable behavior
 -> verification
 -> code-review-swe
 ```
@@ -75,6 +94,7 @@ For features spanning backend and frontend, default to vertical slices. Build th
 engineering-baseline
 -> debugging-investigator
 -> focused reproduction/test
+-> tdd-seams for the regression seam
 -> fix
 -> verification
 -> code-review-swe if risk warrants it
@@ -129,6 +149,7 @@ The handoff must include goal, constraints, relevant files, decisions, commands 
 |---|---|
 | Large/vague planning in Claude | Claude + Superpowers, after confirmation |
 | Codex-only planning | `feature-planner` custom flow |
+| Test-first implementation | `implementation-agent` + `tdd-seams` |
 | Adversarial review | Codex when available |
 | Rescue after repeated failure | Codex when available |
 | Whole-repo or huge context scan | Gemini when available |
@@ -149,11 +170,15 @@ Every serious project should eventually have:
 AGENTS.md
 CLAUDE.md
 .ai/project-context.md
+.ai/agent-workflow.md
+.ai/issue-tracker.md
+.ai/domain.md
 .ai/tech-stack.md
 .ai/commands.md
 .ai/DESIGN.md
 .ai/styleguide.md
 .ai/specs/
+.ai/tickets/
 .ai/decisions/
 ```
 
@@ -193,7 +218,13 @@ Do not say "done" if required scope remains incomplete. If verification was skip
 
 For implementation work, run a local final review pass before the final response. Compare the request/plan against actual changes, inspect changed files or diff when available, and decide whether external/adversarial review is needed.
 
+For executable behavior, prefer seam-first feedback: identify the public seam, add or name the focused failing check where practical, implement one vertical slice, and run the focused verification before moving on.
+
 ## Example Prompts
+
+```text
+/ai-workflow what should I use for this?
+```
 
 ```text
 /ai-setup-doctor
@@ -202,6 +233,12 @@ For implementation work, run a local final review pass before the final response
 ```text
 /ai-setup-init set up this project
 ```
+
+```text
+/ai-setup-configure-project
+```
+
+`/ai-setup-configure-project` should inspect the repo after init, draft `.ai/project-context.md`, `.ai/agent-workflow.md`, `.ai/issue-tracker.md`, `.ai/domain.md`, `.ai/tech-stack.md`, `.ai/commands.md`, `.ai/DESIGN.md`, `.ai/styleguide.md`, and styleguide updates from evidence, then ask before writing. Commands should be marked verified only when actually run or sourced from trusted project docs/CI.
 
 ```text
 /ai-setup-audit check this repo's AI setup
@@ -222,6 +259,14 @@ Use feature-planner to plan the billing settings page.
 ```
 
 ```text
+/to-spec turn this conversation into a spec.
+```
+
+```text
+/to-tickets split this approved spec into small implementation tickets.
+```
+
+```text
 Use human-ui-designer to design this page. If design direction is unclear, ask before creating DESIGN.md.
 ```
 
@@ -230,7 +275,7 @@ Use implementation-agent to implement the approved plan and run focused checks.
 ```
 
 ```text
-Use code-review-swe to review this diff for bugs and missing tests.
+Use code-review-swe to review this diff against the ticket and project standards.
 ```
 
 ```text

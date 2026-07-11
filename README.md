@@ -12,13 +12,17 @@ This project installs a layered AI workflow that works with Claude Code, Codex, 
 ## What It Installs
 
 - Global skills:
+  - `ai-workflow-router`
   - `ai-setup-manager`
   - `engineering-baseline`
   - `developer-orchestrator`
   - `grill-with-context`
   - `grill-me`
   - `feature-planner`
+  - `to-spec`
+  - `to-tickets`
   - `implementation-agent`
+  - `tdd-seams`
   - `debugging-investigator`
   - `code-review-swe`
   - `project-memory-curator`
@@ -28,22 +32,28 @@ This project installs a layered AI workflow that works with Claude Code, Codex, 
   - `handoff-protocol`
   - `concise-communication`
 - Optional Claude command wrappers:
+  - `/ai-workflow`
   - `/ai-setup`
   - `/ai-setup-init`
+  - `/ai-setup-configure-project`
   - `/ai-setup-doctor`
   - `/ai-setup-audit`
   - `/ai-setup-standardize`
   - `/ai-setup-update`
+  - `/debug-error`
   - `/plan-feature`
+  - `/to-spec`
+  - `/to-tickets`
   - `/grill-with-context`
   - `/grill-me`
   - `/implement`
   - `/review-code`
   - `/design-ui`
+  - `/project-memory`
   - `/research`
   - `/handoff-codex`
 - Tiny global bootstrap files for Claude/Codex.
-- A project starter kit with `AGENTS.md`, `CLAUDE.md`, `.ai/DESIGN.md`, `.ai/commands.md`, specs, and decisions.
+- A project starter kit with `AGENTS.md`, `CLAUDE.md`, `.ai/agent-workflow.md`, `.ai/issue-tracker.md`, `.ai/domain.md`, `.ai/DESIGN.md`, `.ai/commands.md`, starter Django/React styleguides, specs, tickets, and decisions.
 - Design workflow support for theme discovery, palette/typography direction, `DESIGN.md`, Pencil/.pen workflows, and screenshot QA.
 
 ## Install
@@ -170,11 +180,16 @@ Project init adds only a small local kit:
 AGENTS.md
 CLAUDE.md
 .ai/project-context.md
+.ai/agent-workflow.md
+.ai/issue-tracker.md
+.ai/domain.md
 .ai/tech-stack.md
 .ai/styleguide.md
 .ai/DESIGN.md
 .ai/commands.md
+.agents/skills/styleguides/
 .ai/specs/
+.ai/tickets/
 .ai/decisions/
 ```
 
@@ -184,15 +199,17 @@ Existing files are not overwritten by default. Conflicting files are skipped unl
 
 1. Install global setup.
 2. Add project kit to a repo.
-3. Fill `.ai/commands.md` and `.ai/tech-stack.md`.
-4. Create or improve `.ai/DESIGN.md`.
+3. Run `/ai-setup-configure-project` to inspect the repo and draft `.ai/` updates.
+4. Review and approve the proposed project context, commands, stack, design, and styleguide changes.
 5. Use:
 
 ```text
 Use feature-planner to plan this.
+Use to-spec to turn this conversation into a spec.
+Use to-tickets to split this spec into implementation tickets.
 Use grill-with-context to pressure-test this idea before we plan.
 Use implementation-agent to implement this.
-Use code-review-swe to review this.
+Use code-review-swe to review this against the ticket and project standards.
 Use human-ui-designer to design this.
 ```
 

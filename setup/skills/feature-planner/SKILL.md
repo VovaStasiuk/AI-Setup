@@ -30,6 +30,7 @@ Challenge weak ideas before turning them into plans. Call out overengineering, v
 - For product work spanning backend and frontend, prefer user-verifiable vertical slices over building all backend first and all frontend later.
 - Use horizontal phases only when a real dependency requires it, such as externally defined API contracts, risky schema/auth foundations, or shared platform work.
 - Split independent subsystems into separate plans.
+- If the finished plan is too large for one implementation pass, route to `to-spec` and `to-tickets` before implementation.
 - Project files and existing code patterns override generic preferences.
 - If planning reveals durable architecture, command, or domain knowledge, propose a `project-memory-curator` update instead of leaving it only in chat.
 

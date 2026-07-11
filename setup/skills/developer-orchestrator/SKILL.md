@@ -9,7 +9,7 @@ Use `engineering-baseline` first, then use this skill to choose the route. Proje
 
 ## First pass
 
-1. Identify the task type: plan, implement, review, rescue, design, image, research, long-context, multimodal, security-sensitive, or handoff.
+1. Identify the task type: plan, spec writing, ticket slicing, implement, review, rescue, design, image, research, long-context, multimodal, security-sensitive, or handoff.
 2. Inspect available project instructions and relevant skills.
 3. Check tool availability when a route depends on a CLI/plugin/tool.
 4. Recommend a route and ask before major model/tool handoffs unless a forced route applies.
