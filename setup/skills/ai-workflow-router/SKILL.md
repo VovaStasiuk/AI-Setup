@@ -25,6 +25,7 @@ Ask a short question only when two routes are genuinely tied and the answer chan
 | "I just initialized this project" or blank starter `.ai` files | `/ai-setup-configure-project` |
 | "What should I use?" or unclear workflow choice | `ai-workflow-router` |
 | Vague feature, product idea, architecture decision, migration, or design decision | `grill-with-context` |
+| Ambiguous domain terms, overloaded vocabulary, lifecycle/status naming, ownership/scope language | `domain-modeling` |
 | Requirements are stable and need a plan/spec | `feature-planner` or `/plan-feature` |
 | Conversation or approved plan needs a stable spec | `to-spec` or `/to-spec` |
 | Plan, spec, PRD, or backlog needs small implementation tickets | `to-tickets` or `/to-tickets` |

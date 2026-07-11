@@ -6,9 +6,23 @@ Use this file for shared project vocabulary.
 
 - `TODO`: Define important product, business, and technical terms.
 
+Use the canonical term in specs, tickets, code names, tests, UI labels, and docs.
+
 ## Overloaded Words
 
 Track words that mean different things in different parts of the system.
+
+| Word | Meaning A | Meaning B | Preferred Terms |
+|---|---|---|---|
+| `TODO` |  |  |  |
+
+## Actors And Scope
+
+Document roles, ownership, tenant/account/team boundaries, and permission scope.
+
+## Lifecycle And Statuses
+
+Document important statuses, allowed transitions, terminal states, and invalid states.
 
 ## Naming Guidance
 

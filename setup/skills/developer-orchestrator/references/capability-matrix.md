@@ -3,6 +3,7 @@
 ## Planning
 
 - Claude + Superpowers: best for large, vague, collaborative product/spec planning.
+- `domain-modeling`: best when unclear vocabulary, overloaded terms, lifecycle states, ownership, or scope language could distort the plan/spec/tickets.
 - Custom `feature-planner`: best for Codex sessions, smaller features, or when Superpowers is unavailable.
 - `to-spec`: best when the conversation or approved plan should become a stable implementation contract.
 - `to-tickets`: best after planning/spec work when implementation needs independently reviewable vertical tickets with blockers.

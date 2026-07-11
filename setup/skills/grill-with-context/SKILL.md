@@ -12,6 +12,7 @@ Use `engineering-baseline` first. This skill pressure-tests intent before planni
 Before asking questions, inspect only the relevant project context that is cheap and likely to change the questions:
 
 - `.ai/project-context.md`
+- `.ai/domain.md`
 - `.ai/tech-stack.md`
 - `.ai/DESIGN.md` for UI/design topics
 - `.ai/specs/<feature>/` when the feature is identifiable
@@ -28,6 +29,7 @@ If no project docs exist, behave like normal grilling and ask from first princip
 - If a question can be answered by inspecting the repo or project docs, inspect instead of asking.
 - For each question, provide your recommended answer and why, so the user can confirm or reject quickly.
 - Challenge fuzzy language, overloaded terms, hidden assumptions, and terminology that conflicts with existing docs or code.
+- Use `domain-modeling` when terminology, lifecycle states, ownership, tenant/account scope, or naming choices are central to the decision.
 - Use concrete scenarios to clarify edge cases, permissions, states, lifecycle, ownership, and failure behavior.
 - Walk the decision tree: resolve upstream choices before downstream details.
 - Do not fill unknown requirements with optimistic assumptions; mark them as unknown and ask.
@@ -39,6 +41,7 @@ If no project docs exist, behave like normal grilling and ask from first princip
 During the session, track candidate durable updates without writing them immediately:
 
 - domain terms or renamed concepts
+- overloaded words and preferred vocabulary
 - product rules and invariants
 - lifecycle/status semantics
 - permissions, ownership, and tenant-scope rules
@@ -50,7 +53,8 @@ At the end, ask whether to propose doc updates. Do not write docs without explic
 
 Preferred destinations:
 
-- `.ai/project-context.md` for durable domain/product language
+- `.ai/domain.md` for durable vocabulary, overloaded terms, and naming guidance
+- `.ai/project-context.md` for durable product, architecture, or constraint language
 - `.ai/specs/<feature>/` for feature-specific decisions and contracts
 - `.ai/decisions/` for ADR-like decisions that are hard to reverse, surprising, or tradeoff-heavy
 - `.ai/DESIGN.md` for reusable design direction

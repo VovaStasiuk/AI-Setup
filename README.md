@@ -18,6 +18,7 @@ This project installs a layered AI workflow that works with Claude Code, Codex, 
   - `developer-orchestrator`
   - `grill-with-context`
   - `grill-me`
+  - `domain-modeling`
   - `feature-planner`
   - `to-spec`
   - `to-tickets`

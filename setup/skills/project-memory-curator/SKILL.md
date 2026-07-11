@@ -45,7 +45,8 @@ If evidence is weak, do not propose a permanent rule. Suggest a temporary note o
 ## Destination guide
 
 - `.ai/commands.md` for verified commands and environment rules.
-- `.ai/project-context.md` for architecture/domain facts.
+- `.ai/domain.md` for durable vocabulary, overloaded terms, lifecycle/status semantics, scope/ownership terms, and naming guidance.
+- `.ai/project-context.md` for architecture/product facts and constraints.
 - `.ai/DESIGN.md` for visual/product UI rules.
 - `.ai/decisions/` for durable architecture/product decisions.
 - `.ai/specs/<feature>/` for feature-specific context.

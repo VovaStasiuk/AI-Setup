@@ -21,10 +21,11 @@ Do not invent requirements. Mark uncertain details as assumptions or open questi
 
 1. Identify the problem, users, goal, and source of truth.
 2. Inspect the project enough to use correct terminology and avoid stale architecture claims.
-3. Capture implementation decisions already made in the conversation.
-4. Capture testing decisions, including the public seams or workflows that should be verified by `tdd-seams` during implementation.
-5. Write the spec to the configured destination from `.ai/agent-workflow.md` when the user asks you to persist it.
-6. If no destination is configured, default to `.ai/specs/` for local specs and ask before writing.
+3. Use `domain-modeling` when the spec introduces or depends on ambiguous product, business, lifecycle, ownership, or permission terms.
+4. Capture implementation decisions already made in the conversation.
+5. Capture testing decisions, including the public seams or workflows that should be verified by `tdd-seams` during implementation.
+6. Write the spec to the configured destination from `.ai/agent-workflow.md` when the user asks you to persist it.
+7. If no destination is configured, default to `.ai/specs/` for local specs and ask before writing.
 
 Do not interview the user unless a missing decision would materially change the spec.
 
@@ -46,6 +47,8 @@ Use this structure:
 ## Out Of Scope
 
 ## User Stories
+
+## Domain Language
 
 ## Implementation Decisions
 

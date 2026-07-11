@@ -47,6 +47,7 @@ Check whether the diff faithfully implements the source of truth:
 - required behavior missing or partial;
 - behavior added that was not requested;
 - acceptance criteria not covered;
+- domain vocabulary or lifecycle semantics used differently from the spec/ticket;
 - test seam or verification missing for risky behavior;
 - assumptions in the implementation that conflict with the spec/ticket.
 
@@ -55,6 +56,7 @@ Check whether the diff faithfully implements the source of truth:
 Check whether the diff follows project standards:
 
 - `AGENTS.md`, `CLAUDE.md`, `.ai/`, styleguides, contributing docs, and nearby code patterns;
+- `.ai/domain.md` naming and vocabulary guidance;
 - security, privacy, performance, accessibility, and migration expectations;
 - local command/test conventions;
 - baseline code-smell heuristics below when project docs are silent.

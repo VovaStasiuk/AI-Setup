@@ -7,7 +7,7 @@ Project instructions override this file. Keep global context small and load deta
 - Use `engineering-baseline` first for non-trivial engineering work.
 - Use `ai-workflow-router` when the user asks what workflow, skill, or command to use next.
 - Use `developer-orchestrator` when a task may need planning, implementation, review, rescue, design, research, image generation, long-context analysis, or another model/tool.
-- Use specialist skills by name when appropriate: `grill-with-context`, `feature-planner`, `to-spec`, `to-tickets`, `implementation-agent`, `tdd-seams`, `debugging-investigator`, `code-review-swe`, `human-ui-designer`, `research-brief`, `handoff-protocol`, `concise-communication`.
+- Use specialist skills by name when appropriate: `grill-with-context`, `domain-modeling`, `feature-planner`, `to-spec`, `to-tickets`, `implementation-agent`, `tdd-seams`, `debugging-investigator`, `code-review-swe`, `human-ui-designer`, `research-brief`, `handoff-protocol`, `concise-communication`.
 
 ## Routing
 

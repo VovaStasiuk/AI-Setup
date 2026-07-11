@@ -137,6 +137,9 @@ Bad global skill content:
 For vague feature, product, architecture, or design requests, use
 `grill-with-context` before planning. It should clarify shared language from
 existing project docs/code when available and ask before proposing file updates.
+Use `domain-modeling` when unclear vocabulary, overloaded terms, lifecycle
+states, ownership, or scope language could distort the spec, tickets, code, or
+tests.
 
 ## Adding skills
 
@@ -159,6 +162,8 @@ After adding a skill:
 ## Answering user questions
 
 If the user asks "what workflow should I use?", recommend `/ai-workflow` or use `ai-workflow-router` directly.
+
+If the user asks to clarify terminology, naming, statuses, ownership, tenant/account scope, or domain language, use `domain-modeling`. Durable vocabulary updates should be proposed through `project-memory-curator` before writing `.ai/domain.md`.
 
 If the user asks to turn a conversation or approved plan into a stable spec, recommend `/to-spec` or use `to-spec` directly.
 

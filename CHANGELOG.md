@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added `domain-modeling` to clarify project vocabulary and maintain `.ai/domain.md` through approved memory updates.
 - Added `tdd-seams` to guide test-first implementation through public seams and avoid weak tests.
 - Strengthened `implementation-agent` to use seam-first, focused verification loops for non-trivial work.
 - Upgraded `code-review-swe` with fixed-point, spec-axis, standards-axis, and code-smell baseline guidance.

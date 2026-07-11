@@ -30,6 +30,7 @@ Project files override global skills.
 | `developer-orchestrator` | More than one route/tool may apply | Route recommendation and fallback |
 | `grill-with-context` | Idea is vague or needs pressure-testing, especially inside a codebase | Decisions, shared language, candidate doc updates, open questions, next route |
 | `grill-me` | Backward-compatible alias for old "grill me" prompts | Routes to `grill-with-context` when available |
+| `domain-modeling` | Terms, lifecycle/status language, ownership, scope, or naming is ambiguous | Shared vocabulary, overloaded terms, proposed `.ai/domain.md` update |
 | `feature-planner` | Feature/change needs a spec or plan | Decision-complete plan with tests |
 | `to-spec` | Conversation or approved plan needs a stable spec | Decision-complete spec with assumptions, testing decisions, and next step |
 | `to-tickets` | Spec/plan/PRD/backlog needs small implementation tickets | Ordered tracer-bullet tickets with blocking edges and verification |
@@ -61,6 +62,7 @@ Use this when the user asks what to do next, which command to run, or which skil
 ```text
 engineering-baseline
 -> grill-with-context
+-> domain-modeling when shared language is unclear
 -> to-spec
 -> to-tickets if the spec is too large for one implementation pass
 -> plan review
@@ -75,6 +77,7 @@ engineering-baseline
 engineering-baseline
 -> developer-orchestrator
 -> feature-planner
+-> domain-modeling when terms, ownership, scope, or states affect the plan
 -> vertical slice plan for full-stack work
 -> to-spec for a stable implementation contract
 -> to-tickets for tracker-ready or multi-agent slices
@@ -148,6 +151,7 @@ The handoff must include goal, constraints, relevant files, decisions, commands 
 | Task | Preferred Route |
 |---|---|
 | Large/vague planning in Claude | Claude + Superpowers, after confirmation |
+| Domain vocabulary or overloaded terms | `domain-modeling` |
 | Codex-only planning | `feature-planner` custom flow |
 | Test-first implementation | `implementation-agent` + `tdd-seams` |
 | Adversarial review | Codex when available |
@@ -188,6 +192,7 @@ Keep `AGENTS.md` and `CLAUDE.md` as indexes. Put details in `.ai/` files.
 
 - Do not paste full docs into every conversation.
 - Store durable project decisions in `.ai/decisions/`.
+- Store durable vocabulary and overloaded terms in `.ai/domain.md`.
 - Store feature specs in `.ai/specs/`.
 - Keep global skills reusable and project-neutral.
 - Put stack commands and styleguide details in project files.
@@ -252,6 +257,10 @@ For executable behavior, prefer seam-first feedback: identify the public seam, a
 
 ```text
 Use grill-with-context to pressure-test this idea before we plan.
+```
+
+```text
+Use domain-modeling to clarify these terms before writing the spec.
 ```
 
 ```text
