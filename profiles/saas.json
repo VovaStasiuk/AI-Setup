@@ -1,0 +1,9 @@
+{
+  "name": "saas",
+  "description": "B2B SaaS product setup with workspace, billing, onboarding, dashboard, and admin workflow guidance.",
+  "extends": "core",
+  "skills": [],
+  "projectKitOverlays": [
+    "setup/profile-kits/saas"
+  ]
+}

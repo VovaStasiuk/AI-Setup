@@ -49,12 +49,15 @@ Projects get a tiny local kit:
 - `.ai/styleguide.md`
 - `.ai/DESIGN.md`
 - `.ai/commands.md`
+- optional `.ai/profile.md` from selected profiles
 - `.agents/skills/styleguides/`
 - `.ai/specs/`
 - `.ai/tickets/`
 - `.ai/decisions/`
 
 Project files override global skills.
+
+Profiles are project-layer presets. They can select global skills and add project-kit overlays such as `.ai/profile.md`, but they should not expand the global bootstrap.
 
 ## Precedence
 

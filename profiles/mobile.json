@@ -1,0 +1,9 @@
+{
+  "name": "mobile",
+  "description": "Mobile product setup with platform conventions, device verification, accessibility, offline behavior, and release guidance.",
+  "extends": "core",
+  "skills": [],
+  "projectKitOverlays": [
+    "setup/profile-kits/mobile"
+  ]
+}

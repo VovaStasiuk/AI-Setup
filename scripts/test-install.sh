@@ -16,6 +16,12 @@ mkdir -p "$HOME" "$PROJECT"
 echo "test: validate repo"
 bash "$ROOT_DIR/scripts/validate-repo.sh"
 
+echo "test: list profiles"
+"$ROOT_DIR/install.sh" --list-profiles
+
+echo "test: dry-run profile install"
+"$ROOT_DIR/install.sh" --dry-run --profile saas --all --no-global-files
+
 echo "test: install all"
 "$ROOT_DIR/install.sh" --all --no-global-files
 
@@ -24,6 +30,12 @@ echo "test: doctor"
 
 echo "test: init project"
 "$ROOT_DIR/install.sh" --init-project "$PROJECT"
+
+echo "test: init profiled project"
+PROFILE_PROJECT="$TMP_ROOT/profile-project"
+mkdir -p "$PROFILE_PROJECT"
+"$ROOT_DIR/install.sh" --profile enterprise --init-project "$PROFILE_PROJECT"
+[[ -f "$PROFILE_PROJECT/.ai/profile.md" ]]
 
 echo "test: audit project"
 if "$ROOT_DIR/install.sh" --audit-project "$PROJECT"; then

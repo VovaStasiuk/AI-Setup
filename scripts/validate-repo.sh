@@ -68,6 +68,37 @@ command_skills() {
   ' <<<"$use_line"
 }
 
+json_string_value() {
+  local field="$1"
+  local file="$2"
+  awk -v field="\"$field\"" '
+    index($0, field) {
+      line=$0
+      sub(/^.*:[[:space:]]*"/, "", line)
+      sub(/".*$/, "", line)
+      if (line != $0) print line
+      exit
+    }
+  ' "$file"
+}
+
+json_array_values() {
+  local field="$1"
+  local file="$2"
+  awk -v field="\"$field\"" -v field_name="$field" '
+    index($0, field) { in_array=1 }
+    in_array {
+      line=$0
+      while (match(line, /"[^"]+"/)) {
+        value=substr(line, RSTART + 1, RLENGTH - 2)
+        if (value != field_name) print value
+        line=substr(line, RSTART + RLENGTH)
+      }
+      if ($0 ~ /\]/) exit
+    }
+  ' "$file"
+}
+
 log "AI Setup repository validation"
 
 if [[ -d "$ROOT_DIR/setup/skills" ]]; then
@@ -117,6 +148,74 @@ while IFS= read -r skill; do
   fi
 done < <(core_profile_skills)
 
+for expected_profile in core saas enterprise mobile; do
+  if [[ -f "$ROOT_DIR/profiles/$expected_profile.json" ]]; then
+    ok "profile exists: $expected_profile"
+  else
+    fail "profile missing: $expected_profile"
+  fi
+done
+
+while IFS= read -r profile_file; do
+  profile="$(basename "$profile_file" .json)"
+  profile_name="$(json_string_value name "$profile_file")"
+  profile_description="$(json_string_value description "$profile_file")"
+  profile_extends="$(json_string_value extends "$profile_file")"
+  profile_project_kit="$(json_string_value projectKit "$profile_file")"
+
+  if [[ "$profile_name" == "$profile" ]]; then
+    ok "profile name matches file: $profile"
+  else
+    fail "profile name mismatch: $profile -> ${profile_name:-missing}"
+  fi
+
+  if [[ -n "$profile_description" ]]; then
+    ok "profile has description: $profile"
+  else
+    fail "profile missing description: $profile"
+  fi
+
+  if [[ -n "$profile_extends" ]]; then
+    if [[ -f "$ROOT_DIR/profiles/$profile_extends.json" ]]; then
+      ok "profile extends existing profile: $profile -> $profile_extends"
+    else
+      fail "profile extends missing profile: $profile -> $profile_extends"
+    fi
+  fi
+
+  if [[ -n "$profile_project_kit" ]]; then
+    if [[ -d "$ROOT_DIR/$profile_project_kit" ]]; then
+      ok "profile project kit exists: $profile -> $profile_project_kit"
+    else
+      fail "profile project kit missing: $profile -> $profile_project_kit"
+    fi
+  fi
+
+  while IFS= read -r profile_skill; do
+    [[ -n "$profile_skill" ]] || continue
+    if [[ -d "$ROOT_DIR/setup/skills/$profile_skill" ]]; then
+      ok "profile skill exists: $profile -> $profile_skill"
+    else
+      fail "profile references missing skill: $profile -> $profile_skill"
+    fi
+  done < <(json_array_values skills "$profile_file")
+
+  while IFS= read -r profile_overlay; do
+    [[ -n "$profile_overlay" ]] || continue
+    if [[ -d "$ROOT_DIR/$profile_overlay" ]]; then
+      ok "profile overlay exists: $profile -> $profile_overlay"
+    else
+      fail "profile overlay missing: $profile -> $profile_overlay"
+    fi
+  done < <(json_array_values projectKitOverlays "$profile_file")
+
+  if grep -Eq "\`$profile\`|--profile $profile" "$ROOT_DIR/docs/profiles.md"; then
+    ok "profiles docs mention profile: $profile"
+  else
+    fail "profiles docs missing profile: $profile"
+  fi
+done < <(find "$ROOT_DIR/profiles" -mindepth 1 -maxdepth 1 -type f -name '*.json' | sort)
+
 while IFS= read -r command_file; do
   command="$(basename "$command_file" .md)"
   if grep -Eq "\`/$command\`" "$ROOT_DIR/README.md"; then
@@ -165,6 +264,20 @@ for rel in "${required_project_kit_files[@]}"; do
     ok "project kit file exists: $rel"
   else
     fail "project kit file missing: $rel"
+  fi
+done
+
+required_profile_overlay_files=(
+  "saas/.ai/profile.md"
+  "enterprise/.ai/profile.md"
+  "mobile/.ai/profile.md"
+)
+
+for rel in "${required_profile_overlay_files[@]}"; do
+  if [[ -f "$ROOT_DIR/setup/profile-kits/$rel" ]]; then
+    ok "profile overlay file exists: $rel"
+  else
+    fail "profile overlay file missing: $rel"
   fi
 done
 

@@ -14,6 +14,7 @@ Skip steps only when the work is already small and clear.
 
 ## Artifacts
 
+- Project profile, when installed: `.ai/profile.md`
 - Specs: `.ai/specs/`
 - Tickets: `.ai/tickets/`
 - Durable decisions: `.ai/decisions/`

@@ -1,37 +1,55 @@
 # Profiles
 
-Profiles are planned extensions for different project types.
+Profiles tune the install and project starter kit for a project type without bloating the global bootstrap.
 
-## Core
+List profiles:
 
-Current default. General software development.
+```bash
+./install.sh --list-profiles
+```
 
-## SaaS
+Use a profile during global install:
 
-Future profile for B2B SaaS products:
+```bash
+./install.sh --dry-run --profile saas --all
+./install.sh --profile saas --all
+```
 
-- auth and billing review routes
-- dashboard/design defaults
-- onboarding and admin workflows
-- analytics and settings patterns
+Use a profile during project init:
 
-## Enterprise
+```bash
+./install.sh --dry-run --profile enterprise --init-project /path/to/project
+./install.sh --profile enterprise --init-project /path/to/project
+```
 
-Future profile for enterprise software:
+## Available Profiles
 
-- auditability
-- access control
-- compliance docs
-- dense operational UI
-- migration safety
+| Profile | Use When | Adds |
+|---|---|---|
+| `core` | General software development | Shared skills, global bootstraps, Claude command wrappers, base project kit |
+| `saas` | B2B SaaS products | `.ai/profile.md` guidance for workspaces, billing, onboarding, dashboards, admin workflows, tenant isolation |
+| `enterprise` | Enterprise/GRC/internal operations software | `.ai/profile.md` guidance for access control, auditability, compliance, migrations, dense operations UI |
+| `mobile` | iOS, Android, React Native, Flutter, or mobile-first products | `.ai/profile.md` guidance for platform conventions, devices, accessibility, offline behavior, release safety |
 
-## Mobile
+## Profile Schema
 
-Future profile for iOS/Android/React Native/Flutter:
+Profiles live in `profiles/*.json`.
 
-- device preview expectations
-- platform conventions
-- accessibility checks
-- app store/release workflow
+```json
+{
+  "name": "saas",
+  "description": "B2B SaaS product setup.",
+  "extends": "core",
+  "skills": [],
+  "projectKitOverlays": [
+    "setup/profile-kits/saas"
+  ]
+}
+```
 
-Profiles should add references and project-kit variants. They should not bloat the global bootstrap.
+- `extends` inherits another profile first.
+- `skills` lists extra global skills to install for the profile.
+- `projectKit` points at a full base project kit. `core` uses `setup/project-kit`.
+- `projectKitOverlays` are copied after the inherited/base kit.
+
+Profiles should add focused guidance and starter files. They should not encode one company's stack, commands, or product facts.

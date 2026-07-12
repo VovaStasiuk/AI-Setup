@@ -1,0 +1,9 @@
+{
+  "name": "enterprise",
+  "description": "Enterprise software setup with access control, auditability, compliance, migration, and dense operations guidance.",
+  "extends": "core",
+  "skills": [],
+  "projectKitOverlays": [
+    "setup/profile-kits/enterprise"
+  ]
+}

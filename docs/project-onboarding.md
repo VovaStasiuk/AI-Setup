@@ -8,10 +8,22 @@ Use this when adding AI Setup to an existing project.
 ./install.sh --dry-run --init-project /path/to/project
 ```
 
+For a project-type starter overlay:
+
+```bash
+./install.sh --dry-run --profile saas --init-project /path/to/project
+```
+
 ## 2. Initialize
 
 ```bash
 ./install.sh --init-project /path/to/project
+```
+
+Or with a profile:
+
+```bash
+./install.sh --profile saas --init-project /path/to/project
 ```
 
 Existing files are skipped by default. Use `--force` only after reviewing diffs.
@@ -39,6 +51,7 @@ Review the proposed changes before approving writes.
 Update:
 
 - `.ai/project-context.md`
+- `.ai/profile.md` if a profile was installed
 - `.ai/agent-workflow.md`
 - `.ai/issue-tracker.md`
 - `.ai/domain.md`

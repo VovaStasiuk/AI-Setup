@@ -10,11 +10,12 @@ Use this guide when an AI assistant is helping a developer install, customize, o
    - Claude + Codex
    - Claude + Codex + Gemini
 2. Ask whether they prefer symlinks or copies.
-3. Ask whether they are installing globally, initializing a project, or both.
-4. Run `--dry-run`.
-5. Explain exactly what will change.
-6. Run the real command only after confirmation.
-7. Validate the install.
+3. Ask whether a profile fits the project: `core`, `saas`, `enterprise`, or `mobile`.
+4. Ask whether they are installing globally, initializing a project, or both.
+5. Run `--dry-run`.
+6. Explain exactly what will change.
+7. Run the real command only after confirmation.
+8. Validate the install.
 
 ## Install choices
 
@@ -39,11 +40,26 @@ Codex only:
 ./install.sh --codex
 ```
 
+List and use profiles:
+
+```bash
+./install.sh --list-profiles
+./install.sh --dry-run --profile saas --all
+./install.sh --profile saas --all
+```
+
 Project init:
 
 ```bash
 ./install.sh --dry-run --init-project /path/to/project
 ./install.sh --init-project /path/to/project
+```
+
+Profiled project init:
+
+```bash
+./install.sh --dry-run --profile enterprise --init-project /path/to/project
+./install.sh --profile enterprise --init-project /path/to/project
 ```
 
 Project configuration after init:
@@ -117,7 +133,7 @@ After project init, use `/ai-setup-configure-project` or ask an assistant to use
 
 ## Customization rules
 
-Global skills should remain reusable across projects. Put stack-specific rules in project files or future profiles.
+Global skills should remain reusable across projects. Put stack-specific rules in project files or profile overlays.
 
 Good global skill content:
 
@@ -177,6 +193,7 @@ If the user asks "what should I install?", recommend:
 - `--codex` if they only use Codex
 - `--all` if they use both
 - `--copy` if they want a self-contained setup without symlinks
+- `--profile saas`, `--profile enterprise`, or `--profile mobile` when the project type clearly matches
 
 If they ask "will this work without Gemini?", answer yes. Gemini routes are optional and degrade gracefully.
 

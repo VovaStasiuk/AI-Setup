@@ -10,12 +10,15 @@ DO_COMMANDS=1
 DRY_RUN=0
 LINK_MODE=0
 FORCE=0
+PROFILE_NAME="core"
+SHARED_SKILLS_INSTALLED=0
 INIT_PROJECT=""
 AUDIT_PROJECT=""
 STANDARDIZE_PROJECT=""
 RUN_DOCTOR=0
 RUN_UPDATE=0
 RUN_UNINSTALL=0
+RUN_LIST_PROFILES=0
 RESTORE_BACKUP=""
 VERSION="0.1.0"
 
@@ -27,10 +30,13 @@ Usage:
   ./install.sh --all
   ./install.sh --claude
   ./install.sh --codex
+  ./install.sh --profile saas --all
   ./install.sh --init-project /path/to/project
+  ./install.sh --profile enterprise --init-project /path/to/project
   ./install.sh --audit-project /path/to/project
   ./install.sh --standardize-project /path/to/project
   ./install.sh --doctor
+  ./install.sh --list-profiles
   ./install.sh --update
   ./install.sh --uninstall
   ./install.sh --restore-backup /path/to/backup-dir
@@ -39,6 +45,8 @@ Options:
   --all                 Install shared skills for Claude and Codex
   --claude              Install shared skills for Claude
   --codex               Install shared skills for Codex
+  --profile NAME        Use an install/project profile: core, saas, enterprise, mobile
+  --list-profiles       List available profiles
   --no-global-files     Do not update ~/.claude/CLAUDE.md or ~/.codex/AGENTS.md
   --no-commands         Do not install Claude command wrappers
   --copy                Copy skills/templates (default; source repo can be deleted)
@@ -80,6 +88,139 @@ check_command() {
   fi
 }
 
+profile_path() {
+  printf '%s/profiles/%s.json\n' "$ROOT_DIR" "$1"
+}
+
+json_string_value() {
+  local field="$1"
+  local file="$2"
+  awk -v field="\"$field\"" '
+    index($0, field) {
+      line=$0
+      sub(/^.*:[[:space:]]*"/, "", line)
+      sub(/".*$/, "", line)
+      if (line != $0) print line
+      exit
+    }
+  ' "$file"
+}
+
+json_array_values() {
+  local field="$1"
+  local file="$2"
+  awk -v field="\"$field\"" -v field_name="$field" '
+    index($0, field) { in_array=1 }
+    in_array {
+      line=$0
+      while (match(line, /"[^"]+"/)) {
+        value=substr(line, RSTART + 1, RLENGTH - 2)
+        if (value != field_name) print value
+        line=substr(line, RSTART + RLENGTH)
+      }
+      if ($0 ~ /\]/) exit
+    }
+  ' "$file"
+}
+
+profile_chain() {
+  local profile="$1"
+  local depth="${2:-0}"
+  local file
+  local parent
+
+  if [[ "$depth" -gt 8 ]]; then
+    log "profile inheritance appears to be recursive: $profile"
+    exit 1
+  fi
+
+  file="$(profile_path "$profile")"
+  if [[ ! -f "$file" ]]; then
+    log "unknown profile: $profile"
+    log "run ./install.sh --list-profiles to see available profiles"
+    exit 1
+  fi
+
+  parent="$(json_string_value "extends" "$file")"
+  if [[ -n "$parent" ]]; then
+    profile_chain "$parent" $((depth + 1))
+  fi
+  printf '%s\n' "$profile"
+}
+
+profile_skill_names() {
+  local seen=""
+  local profile
+  local file
+  local skill
+
+  for profile in $(profile_chain "$PROFILE_NAME"); do
+    file="$(profile_path "$profile")"
+    while IFS= read -r skill; do
+      [[ -n "$skill" ]] || continue
+      if [[ ! -d "$ROOT_DIR/setup/skills/$skill" ]]; then
+        log "profile references missing skill: $profile -> $skill"
+        exit 1
+      fi
+      case " $seen " in
+        *" $skill "*) ;;
+        *)
+          seen="$seen $skill"
+          printf '%s\n' "$skill"
+          ;;
+      esac
+    done < <(json_array_values "skills" "$file")
+  done
+}
+
+profile_project_kit_paths() {
+  local seen=""
+  local profile
+  local file
+  local kit
+
+  for profile in $(profile_chain "$PROFILE_NAME"); do
+    file="$(profile_path "$profile")"
+    kit="$(json_string_value "projectKit" "$file")"
+    [[ -n "$kit" ]] || continue
+    case " $seen " in
+      *" $kit "*) ;;
+      *)
+        seen="$seen $kit"
+        printf '%s\n' "$kit"
+        ;;
+    esac
+  done
+}
+
+profile_project_kit_overlay_paths() {
+  local profile
+  local file
+  local overlay
+
+  for profile in $(profile_chain "$PROFILE_NAME"); do
+    file="$(profile_path "$profile")"
+    while IFS= read -r overlay; do
+      [[ -n "$overlay" ]] || continue
+      printf '%s\n' "$overlay"
+    done < <(json_array_values "projectKitOverlays" "$file")
+  done
+}
+
+list_profiles() {
+  local profile_file
+  local name
+  local description
+
+  log "Available profiles"
+  for profile_file in "$ROOT_DIR"/profiles/*.json; do
+    [[ -f "$profile_file" ]] || continue
+    name="$(json_string_value "name" "$profile_file")"
+    description="$(json_string_value "description" "$profile_file")"
+    log "- ${name:-$(basename "$profile_file" .json)}: ${description:-no description}"
+  done
+}
+
 run() {
   if [[ "$DRY_RUN" == "1" ]]; then
     printf '[dry-run] %q' "$1"
@@ -88,6 +229,20 @@ run() {
     printf '\n'
   else
     "$@"
+  fi
+}
+
+copy_skill_tree() {
+  local skill="$1"
+  local dst_root="$2"
+  local src="$ROOT_DIR/setup/skills/$skill"
+  local dst="$dst_root/$skill"
+
+  run mkdir -p "$dst"
+  if [[ "$DRY_RUN" == "1" ]]; then
+    log "[dry-run] copy skill contents: $src -> $dst"
+  else
+    cp -R "$src"/. "$dst"/
   fi
 }
 
@@ -100,6 +255,22 @@ copy_file() {
     return
   fi
   run cp "$src" "$dst"
+}
+
+copy_project_kit_tree() {
+  local kit_path="$1"
+  local project="$2"
+  local src="$ROOT_DIR/$kit_path"
+
+  if [[ ! -d "$src" ]]; then
+    log "profile references missing project kit path: $kit_path"
+    exit 1
+  fi
+
+  while IFS= read -r -d '' file; do
+    local rel="${file#"$src"/}"
+    copy_file "$file" "$project/$rel"
+  done < <(find "$src" -type f -print0)
 }
 
 copy_tree_contents() {
@@ -187,6 +358,7 @@ write_install_metadata() {
   "version": "$VERSION",
   "installed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "mode": "$mode",
+  "profile": "$PROFILE_NAME",
   "source_path": "$ROOT_DIR",
   "can_delete_source": $can_delete_source,
   "installed_tools": "$tools"
@@ -207,17 +379,24 @@ backup_global_file() {
 
 install_shared_skills() {
   local canonical="$HOME/.agents/skills"
+  local skill
+  if [[ "$SHARED_SKILLS_INSTALLED" == "1" ]]; then
+    return
+  fi
   run mkdir -p "$canonical"
-  copy_tree_contents "$ROOT_DIR/setup/skills" "$canonical"
+  while IFS= read -r skill; do
+    copy_skill_tree "$skill" "$canonical"
+  done < <(profile_skill_names)
+  SHARED_SKILLS_INSTALLED=1
 }
 
 refresh_shared_skills() {
   local canonical="$HOME/.agents/skills"
+  local skill
   run mkdir -p "$canonical"
-  for skill_dir in "$ROOT_DIR"/setup/skills/*; do
-    [[ -d "$skill_dir" ]] || continue
-    replace_tree "$skill_dir" "$canonical/$(basename "$skill_dir")"
-  done
+  while IFS= read -r skill; do
+    replace_tree "$ROOT_DIR/setup/skills/$skill" "$canonical/$skill"
+  done < <(profile_skill_names)
 }
 
 skill_names() {
@@ -235,11 +414,11 @@ command_names() {
 }
 
 install_codex() {
+  local skill
   install_shared_skills
-  for skill_dir in "$ROOT_DIR"/setup/skills/*; do
-    [[ -d "$skill_dir" ]] || continue
-    link_or_copy_skill "$(basename "$skill_dir")" "$HOME/.codex/skills"
-  done
+  while IFS= read -r skill; do
+    link_or_copy_skill "$skill" "$HOME/.codex/skills"
+  done < <(profile_skill_names)
   if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
     backup_global_file "$HOME/.codex/AGENTS.md"
     run mkdir -p "$HOME/.codex"
@@ -248,11 +427,11 @@ install_codex() {
 }
 
 install_claude() {
+  local skill
   install_shared_skills
-  for skill_dir in "$ROOT_DIR"/setup/skills/*; do
-    [[ -d "$skill_dir" ]] || continue
-    link_or_copy_skill "$(basename "$skill_dir")" "$HOME/.claude/skills"
-  done
+  while IFS= read -r skill; do
+    link_or_copy_skill "$skill" "$HOME/.claude/skills"
+  done < <(profile_skill_names)
   if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
     backup_global_file "$HOME/.claude/CLAUDE.md"
     run mkdir -p "$HOME/.claude"
@@ -266,38 +445,43 @@ install_claude() {
 
 init_project() {
   local project="$1"
+  local kit_path
+  local overlay_path
   if [[ ! -d "$project" ]]; then
     log "project path does not exist: $project"
     exit 1
   fi
 
-  while IFS= read -r -d '' file; do
-    local rel="${file#"$ROOT_DIR"/setup/project-kit/}"
-    copy_file "$file" "$project/$rel"
-  done < <(find "$ROOT_DIR/setup/project-kit" -type f -print0)
+  log "project profile: $PROFILE_NAME"
+  while IFS= read -r kit_path; do
+    copy_project_kit_tree "$kit_path" "$project"
+  done < <(profile_project_kit_paths)
+  while IFS= read -r overlay_path; do
+    copy_project_kit_tree "$overlay_path" "$project"
+  done < <(profile_project_kit_overlay_paths)
 }
 
 doctor() {
   local failures=0
   log "AI Setup doctor"
   log "version: $VERSION"
+  log "profile: $PROFILE_NAME"
   log "root: $ROOT_DIR"
 
   check_path "setup skills" "$ROOT_DIR/setup/skills" || failures=$((failures + 1))
   check_path "setup project kit" "$ROOT_DIR/setup/project-kit" || failures=$((failures + 1))
   check_path "setup global AGENTS" "$ROOT_DIR/setup/global-files/AGENTS.md" || failures=$((failures + 1))
   check_path "setup global CLAUDE" "$ROOT_DIR/setup/global-files/CLAUDE.md" || failures=$((failures + 1))
+  check_path "profile $PROFILE_NAME" "$(profile_path "$PROFILE_NAME")" || failures=$((failures + 1))
   check_path "installed metadata" "$HOME/.agents/ai-setup/install.json" || true
   check_path "installed agents skills" "$HOME/.agents/skills" || failures=$((failures + 1))
   check_path "codex global AGENTS" "$HOME/.codex/AGENTS.md" || true
   check_path "claude global CLAUDE" "$HOME/.claude/CLAUDE.md" || true
 
-  for skill_dir in "$ROOT_DIR"/setup/skills/*; do
-    [[ -d "$skill_dir" ]] || continue
-    local skill
-    skill="$(basename "$skill_dir")"
+  local skill
+  while IFS= read -r skill; do
     check_path "canonical skill $skill" "$HOME/.agents/skills/$skill/SKILL.md" || failures=$((failures + 1))
-  done
+  done < <(profile_skill_names)
 
   check_command claude
   check_command codex
@@ -473,6 +657,7 @@ standardize_project() {
 
 update_install() {
   local tools=""
+  local skill
   if [[ "$DO_CLAUDE" == "0" && "$DO_CODEX" == "0" ]]; then
     DO_CLAUDE=1
     DO_CODEX=1
@@ -482,10 +667,9 @@ update_install() {
   refresh_shared_skills
 
   if [[ "$DO_CODEX" == "1" ]]; then
-    for skill_dir in "$ROOT_DIR"/setup/skills/*; do
-      [[ -d "$skill_dir" ]] || continue
-      refresh_tool_skill "$(basename "$skill_dir")" "$HOME/.codex/skills"
-    done
+    while IFS= read -r skill; do
+      refresh_tool_skill "$skill" "$HOME/.codex/skills"
+    done < <(profile_skill_names)
     if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
       backup_global_file "$HOME/.codex/AGENTS.md"
       run mkdir -p "$HOME/.codex"
@@ -495,10 +679,9 @@ update_install() {
   fi
 
   if [[ "$DO_CLAUDE" == "1" ]]; then
-    for skill_dir in "$ROOT_DIR"/setup/skills/*; do
-      [[ -d "$skill_dir" ]] || continue
-      refresh_tool_skill "$(basename "$skill_dir")" "$HOME/.claude/skills"
-    done
+    while IFS= read -r skill; do
+      refresh_tool_skill "$skill" "$HOME/.claude/skills"
+    done < <(profile_skill_names)
     if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
       backup_global_file "$HOME/.claude/CLAUDE.md"
       run mkdir -p "$HOME/.claude"
@@ -586,6 +769,17 @@ while [[ $# -gt 0 ]]; do
     --codex)
       DO_CODEX=1
       ;;
+    --profile)
+      shift
+      PROFILE_NAME="${1:-}"
+      if [[ -z "$PROFILE_NAME" ]]; then
+        log "--profile requires a name"
+        exit 1
+      fi
+      ;;
+    --list-profiles)
+      RUN_LIST_PROFILES=1
+      ;;
     --no-global-files)
       DO_GLOBAL_FILES=0
       ;;
@@ -658,6 +852,13 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+if [[ "$RUN_LIST_PROFILES" == "1" ]]; then
+  list_profiles
+  exit 0
+fi
+
+profile_chain "$PROFILE_NAME" >/dev/null
+
 if [[ "$DO_CLAUDE" == "0" && "$DO_CODEX" == "0" && -z "$INIT_PROJECT" && -z "$AUDIT_PROJECT" && -z "$STANDARDIZE_PROJECT" && "$RUN_DOCTOR" == "0" && "$RUN_UPDATE" == "0" && "$RUN_UNINSTALL" == "0" && -z "$RESTORE_BACKUP" ]]; then
   usage
   exit 0
@@ -698,6 +899,7 @@ if [[ "$DO_CODEX" == "1" || "$DO_CLAUDE" == "1" ]]; then
   [[ "$DO_CLAUDE" == "1" ]] && tools="${tools}claude"
   [[ "$DO_CODEX" == "1" ]] && tools="${tools:+$tools,}codex"
   write_install_metadata "$tools"
+  log "profile: $PROFILE_NAME"
   if [[ "$LINK_MODE" == "0" ]]; then
     log "install mode: copy. The source repo/folder can be deleted after install."
   else

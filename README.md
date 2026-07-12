@@ -55,6 +55,7 @@ This project installs a layered AI workflow that works with Claude Code, Codex, 
   - `/handoff-codex`
 - Tiny global bootstrap files for Claude/Codex.
 - A project starter kit with `AGENTS.md`, `CLAUDE.md`, `.ai/agent-workflow.md`, `.ai/issue-tracker.md`, `.ai/domain.md`, `.ai/DESIGN.md`, `.ai/commands.md`, starter Django/React styleguides, specs, tickets, and decisions.
+- Optional profiles for `core`, `saas`, `enterprise`, and `mobile` project starts.
 - Design workflow support for theme discovery, palette/typography direction, `DESIGN.md`, Pencil/.pen workflows, and screenshot QA.
 
 ## Install
@@ -90,6 +91,14 @@ Install only shared skills and Claude links/commands:
 ./install.sh --claude
 ```
 
+Use a project-type profile:
+
+```bash
+./install.sh --list-profiles
+./install.sh --dry-run --profile saas --all
+./install.sh --profile saas --all
+```
+
 Copy mode is the default, so the cloned/downloaded repo can be deleted after install.
 
 Use maintainer symlink mode:
@@ -102,6 +111,12 @@ Initialize an existing project:
 
 ```bash
 ./install.sh --init-project /path/to/project
+```
+
+Initialize a project with a profile overlay:
+
+```bash
+./install.sh --profile enterprise --init-project /path/to/project
 ```
 
 Initialize a new project folder:
@@ -258,9 +273,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Security issues: see [SECURITY.md](SECUR
 
 ## Roadmap
 
-- Mobile development profile.
-- SaaS product profile.
-- Enterprise/GRC profile.
 - Team onboarding checklist.
 - Optional sync/update script.
 - More installer tests.

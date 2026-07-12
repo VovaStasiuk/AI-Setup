@@ -6,6 +6,7 @@ Project instructions override global skills. Read this file first, then load onl
 
 - Architecture and domain: `.ai/project-context.md`, `.ai/domain.md`
 - Workflow and tracker rules: `.ai/agent-workflow.md`, `.ai/issue-tracker.md`
+- Optional project profile: `.ai/profile.md`
 - Tech stack and commands: `.ai/tech-stack.md`, `.ai/commands.md`
 - Visual design: `.ai/DESIGN.md`, `.ai/styleguide.md`
 - Specs, tickets, and decisions: `.ai/specs/`, `.ai/tickets/`, `.ai/decisions/`
