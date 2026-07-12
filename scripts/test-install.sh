@@ -28,6 +28,18 @@ echo "test: install all"
 echo "test: doctor"
 "$ROOT_DIR/install.sh" --doctor
 
+echo "test: status"
+"$ROOT_DIR/install.sh" --status --no-global-files
+
+echo "test: status detects stale installed skill"
+printf '\n# test drift\n' >> "$HOME/.agents/skills/ai-setup-manager/SKILL.md"
+if "$ROOT_DIR/install.sh" --status --no-global-files; then
+  echo "status unexpectedly passed with stale installed skill"
+  exit 1
+else
+  echo "status reported stale installed skill as expected"
+fi
+
 echo "test: init project"
 "$ROOT_DIR/install.sh" --init-project "$PROJECT"
 
@@ -49,6 +61,9 @@ echo "test: standardize project"
 
 echo "test: update"
 "$ROOT_DIR/install.sh" --update --no-global-files
+
+echo "test: status after update"
+"$ROOT_DIR/install.sh" --status --no-global-files
 
 echo "test: uninstall"
 "$ROOT_DIR/install.sh" --uninstall --no-global-files

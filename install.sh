@@ -16,6 +16,7 @@ INIT_PROJECT=""
 AUDIT_PROJECT=""
 STANDARDIZE_PROJECT=""
 RUN_DOCTOR=0
+RUN_STATUS=0
 RUN_UPDATE=0
 RUN_UNINSTALL=0
 RUN_LIST_PROFILES=0
@@ -36,6 +37,7 @@ Usage:
   ./install.sh --audit-project /path/to/project
   ./install.sh --standardize-project /path/to/project
   ./install.sh --doctor
+  ./install.sh --status
   ./install.sh --list-profiles
   ./install.sh --update
   ./install.sh --uninstall
@@ -54,6 +56,7 @@ Options:
   --force               Overwrite project kit files during --init-project
   --dry-run             Print actions without changing files
   --doctor              Check global AI Setup installation health
+  --status              Report installed-vs-source drift without changing files
   --update              Refresh installed skills/commands from this repo
   --uninstall           Remove AI Setup installed skills/commands/templates
   --restore-backup PATH Restore global AGENTS.md/CLAUDE.md from backup dir
@@ -86,6 +89,21 @@ check_command() {
   else
     log "optional missing: command $name"
   fi
+}
+
+source_revision() {
+  local revision=""
+  local dirty=""
+
+  if command -v git >/dev/null 2>&1 && [[ -d "$ROOT_DIR/.git" ]]; then
+    revision="$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || true)"
+    dirty="$(git -C "$ROOT_DIR" status --porcelain 2>/dev/null || true)"
+    if [[ -n "$revision" && -n "$dirty" ]]; then
+      revision="${revision}-dirty"
+    fi
+  fi
+
+  printf '%s\n' "${revision:-unknown}"
 }
 
 profile_path() {
@@ -360,6 +378,7 @@ write_install_metadata() {
   "mode": "$mode",
   "profile": "$PROFILE_NAME",
   "source_path": "$ROOT_DIR",
+  "source_revision": "$(source_revision)",
   "can_delete_source": $can_delete_source,
   "installed_tools": "$tools"
 }
@@ -411,6 +430,193 @@ command_names() {
     [[ -f "$cmd_file" ]] || continue
     basename "$cmd_file"
   done
+}
+
+paths_match() {
+  local src="$1"
+  local dst="$2"
+
+  if [[ -d "$src" ]]; then
+    [[ -d "$dst" ]] || return 1
+    diff -qr "$src" "$dst" >/dev/null 2>&1
+  else
+    [[ -f "$dst" || -L "$dst" ]] || return 1
+    cmp -s "$src" "$dst"
+  fi
+}
+
+status_path() {
+  local label="$1"
+  local src="$2"
+  local dst="$3"
+  local optional="${4:-0}"
+
+  if [[ ! -e "$src" && ! -L "$src" ]]; then
+    log "source-missing: $label -> $src"
+    STATUS_MISSING=$((STATUS_MISSING + 1))
+    return 1
+  fi
+
+  if [[ ! -e "$dst" && ! -L "$dst" ]]; then
+    if [[ "$optional" == "1" ]]; then
+      log "optional missing: $label -> $dst"
+      STATUS_SKIPPED=$((STATUS_SKIPPED + 1))
+      return 0
+    fi
+    log "missing: $label -> $dst"
+    STATUS_MISSING=$((STATUS_MISSING + 1))
+    return 1
+  fi
+
+  if paths_match "$src" "$dst"; then
+    log "match: $label -> $dst"
+    STATUS_MATCHED=$((STATUS_MATCHED + 1))
+    return 0
+  fi
+
+  log "stale: $label -> $dst"
+  STATUS_STALE=$((STATUS_STALE + 1))
+  return 1
+}
+
+status_skill_root() {
+  local label="$1"
+  local target_root="$2"
+  local active_skills="$3"
+  local skill
+
+  for skill in $active_skills; do
+    status_path "$label skill $skill" "$ROOT_DIR/setup/skills/$skill" "$target_root/$skill" || true
+  done
+}
+
+status_extra_source_skills() {
+  local label="$1"
+  local target_root="$2"
+  local active_skills="$3"
+  local skill
+
+  [[ -d "$target_root" ]] || return 0
+
+  while IFS= read -r skill; do
+    case " $active_skills " in
+      *" $skill "*) ;;
+      *)
+        if [[ -e "$target_root/$skill" || -L "$target_root/$skill" ]]; then
+          log "extra: $label skill $skill -> $target_root/$skill"
+          STATUS_EXTRA=$((STATUS_EXTRA + 1))
+        fi
+        ;;
+    esac
+  done < <(skill_names)
+}
+
+install_status() {
+  local metadata="$HOME/.agents/ai-setup/install.json"
+  local source_rev
+  local installed_profile=""
+  local installed_mode=""
+  local installed_revision=""
+  local installed_source=""
+  local installed_tools=""
+  local check_claude="$DO_CLAUDE"
+  local check_codex="$DO_CODEX"
+  local active_skills=""
+  local skill
+  local cmd
+
+  STATUS_MATCHED=0
+  STATUS_MISSING=0
+  STATUS_STALE=0
+  STATUS_EXTRA=0
+  STATUS_SKIPPED=0
+
+  source_rev="$(source_revision)"
+
+  log "AI Setup status"
+  log "version: $VERSION"
+  log "profile: $PROFILE_NAME"
+  log "root: $ROOT_DIR"
+  log "source revision: $source_rev"
+
+  if [[ -f "$metadata" ]]; then
+    installed_profile="$(json_string_value "profile" "$metadata")"
+    installed_mode="$(json_string_value "mode" "$metadata")"
+    installed_revision="$(json_string_value "source_revision" "$metadata")"
+    installed_source="$(json_string_value "source_path" "$metadata")"
+    installed_tools="$(json_string_value "installed_tools" "$metadata")"
+    log "installed profile: ${installed_profile:-unknown}"
+    log "installed mode: ${installed_mode:-unknown}"
+    log "installed source: ${installed_source:-unknown}"
+    log "installed revision: ${installed_revision:-unknown}"
+    log "installed tools: ${installed_tools:-unknown}"
+    if [[ -n "$installed_revision" && "$installed_revision" != "$source_rev" ]]; then
+      log "stale: install metadata revision differs from source"
+      STATUS_STALE=$((STATUS_STALE + 1))
+    fi
+  else
+    log "missing: installed metadata -> $metadata"
+    STATUS_MISSING=$((STATUS_MISSING + 1))
+  fi
+
+  if [[ "$check_claude" == "0" && "$check_codex" == "0" ]]; then
+    case ",$installed_tools," in
+      *,claude,*) check_claude=1 ;;
+    esac
+    case ",$installed_tools," in
+      *,codex,*) check_codex=1 ;;
+    esac
+  fi
+
+  if [[ "$check_claude" == "0" && "$check_codex" == "0" ]]; then
+    [[ -d "$HOME/.claude/skills" || -d "$HOME/.claude/commands" || -f "$HOME/.claude/CLAUDE.md" ]] && check_claude=1
+    [[ -d "$HOME/.codex/skills" || -f "$HOME/.codex/AGENTS.md" ]] && check_codex=1
+  fi
+
+  while IFS= read -r skill; do
+    active_skills="${active_skills:+$active_skills }$skill"
+  done < <(profile_skill_names)
+
+  log ""
+  log "Canonical shared skills"
+  status_skill_root "canonical" "$HOME/.agents/skills" "$active_skills"
+  status_extra_source_skills "canonical" "$HOME/.agents/skills" "$active_skills"
+
+  if [[ "$check_codex" == "1" ]]; then
+    log ""
+    log "Codex install"
+    status_skill_root "codex" "$HOME/.codex/skills" "$active_skills"
+    status_extra_source_skills "codex" "$HOME/.codex/skills" "$active_skills"
+    if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
+      status_path "codex global AGENTS" "$ROOT_DIR/setup/global-files/AGENTS.md" "$HOME/.codex/AGENTS.md" 1 || true
+    fi
+  fi
+
+  if [[ "$check_claude" == "1" ]]; then
+    log ""
+    log "Claude install"
+    status_skill_root "claude" "$HOME/.claude/skills" "$active_skills"
+    status_extra_source_skills "claude" "$HOME/.claude/skills" "$active_skills"
+    if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
+      status_path "claude global CLAUDE" "$ROOT_DIR/setup/global-files/CLAUDE.md" "$HOME/.claude/CLAUDE.md" 1 || true
+    fi
+    if [[ "$DO_COMMANDS" == "1" ]]; then
+      log ""
+      log "Claude commands"
+      while IFS= read -r cmd; do
+        status_path "claude command $cmd" "$ROOT_DIR/setup/claude-commands/$cmd" "$HOME/.claude/commands/$cmd" || true
+      done < <(command_names)
+    fi
+  fi
+
+  log ""
+  log "status summary: matched $STATUS_MATCHED, missing $STATUS_MISSING, stale $STATUS_STALE, extra $STATUS_EXTRA, optional-missing $STATUS_SKIPPED"
+  if [[ "$STATUS_MISSING" -gt 0 || "$STATUS_STALE" -gt 0 || "$STATUS_EXTRA" -gt 0 ]]; then
+    log "status result: issues found"
+    return 1
+  fi
+
+  log "status result: ok"
 }
 
 install_codex() {
@@ -486,6 +692,10 @@ doctor() {
   check_command claude
   check_command codex
   check_command gemini
+
+  if ! install_status; then
+    failures=$((failures + 1))
+  fi
 
   if find "$HOME/.claude/skills" "$HOME/.codex/skills" -xtype l -print 2>/dev/null | grep -q .; then
     log "warning: broken skill symlinks detected:"
@@ -663,6 +873,11 @@ update_install() {
     DO_CODEX=1
   fi
 
+  if [[ "$DRY_RUN" == "1" ]]; then
+    log "current install status before update"
+    install_status || true
+  fi
+
   log "updating AI Setup"
   refresh_shared_skills
 
@@ -825,6 +1040,9 @@ while [[ $# -gt 0 ]]; do
     --doctor)
       RUN_DOCTOR=1
       ;;
+    --status)
+      RUN_STATUS=1
+      ;;
     --update)
       RUN_UPDATE=1
       ;;
@@ -859,7 +1077,7 @@ fi
 
 profile_chain "$PROFILE_NAME" >/dev/null
 
-if [[ "$DO_CLAUDE" == "0" && "$DO_CODEX" == "0" && -z "$INIT_PROJECT" && -z "$AUDIT_PROJECT" && -z "$STANDARDIZE_PROJECT" && "$RUN_DOCTOR" == "0" && "$RUN_UPDATE" == "0" && "$RUN_UNINSTALL" == "0" && -z "$RESTORE_BACKUP" ]]; then
+if [[ "$DO_CLAUDE" == "0" && "$DO_CODEX" == "0" && -z "$INIT_PROJECT" && -z "$AUDIT_PROJECT" && -z "$STANDARDIZE_PROJECT" && "$RUN_DOCTOR" == "0" && "$RUN_STATUS" == "0" && "$RUN_UPDATE" == "0" && "$RUN_UNINSTALL" == "0" && -z "$RESTORE_BACKUP" ]]; then
   usage
   exit 0
 fi
@@ -884,6 +1102,10 @@ fi
 
 if [[ "$RUN_DOCTOR" == "1" ]]; then
   doctor
+fi
+
+if [[ "$RUN_STATUS" == "1" ]]; then
+  install_status
 fi
 
 if [[ "$DO_CODEX" == "1" ]]; then

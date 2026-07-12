@@ -76,6 +76,12 @@ Health check:
 ./install.sh --doctor
 ```
 
+Drift check:
+
+```bash
+./install.sh --status
+```
+
 Update:
 
 ```bash
@@ -200,3 +206,5 @@ If they ask "will this work without Gemini?", answer yes. Gemini routes are opti
 If they ask "will this pollute context?", explain that only short global bootstraps and skill metadata load by default; detailed references load only when a skill triggers.
 
 If they ask "can I delete the cloned repo?", check `~/.agents/ai-setup/install.json`. Copy mode means yes. Link mode means no.
+
+If they ask whether the live install is current, run `./install.sh --status`. Treat missing or stale skills, command wrappers, and bootstrap files as update signals, then dry-run `./install.sh --update` before applying the real update.

@@ -25,6 +25,7 @@ If no source repo is found but installed skills exist, explain that project init
 - For project init: run `./install.sh --dry-run --init-project <path>`, explain changes, then ask before applying.
 - For project configuration after init: inspect the repo, draft `.ai` and styleguide updates from evidence, then ask before writing.
 - For global health: run `./install.sh --doctor`.
+- For installed-vs-source drift: run `./install.sh --status`, then dry-run update before applying changes.
 - For project audit: run `./install.sh --audit-project <path>`, then inspect details manually if needed.
 - For project standardization: run `./install.sh --standardize-project <path>`, inspect the reported surfaces, then propose a step-by-step migration before editing.
 - For "can I delete the repo?": read install metadata. Copy mode means yes; link mode means no.
@@ -184,13 +185,6 @@ Suggested batch order:
 4. Document intentional Claude/Codex differences in `.ai/decisions/`.
 5. Audit styleguides against actual code patterns.
 6. Propose memory/styleguide updates through `project-memory-curator`.
-
-Recommend a canonical structure:
-  - `AGENTS.md` as shared index
-  - `CLAUDE.md` as mirror or small Claude-specific wrapper
-  - `.ai/` for project context, workflow, issue tracker, domain language, commands, design, specs, tickets, decisions
-  - `.agents/skills/` for project-specific skills and stack/styleguides
-   - `.claude/` and `.codex/` only for tool-specific config
 
 Future extension: generate or improve stack-specific styleguides from actual project code patterns, then ask for review before adopting them.
 

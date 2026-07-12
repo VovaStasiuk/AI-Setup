@@ -132,6 +132,12 @@ Check global install health:
 ./install.sh --doctor
 ```
 
+Check installed-vs-source drift:
+
+```bash
+./install.sh --status
+```
+
 Update an existing install from a newer copy of this repo:
 
 ```bash
