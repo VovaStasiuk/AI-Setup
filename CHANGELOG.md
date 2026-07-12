@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Made `/ai-setup-configure-project` profile-aware with a concrete `Configured Project Plan` output contract and example.
 - Added installer profile support with `core`, `saas`, `enterprise`, and `mobile` profiles plus project-kit overlays.
 - Added a Billing Settings worked example that shows the full `grill-with-context` -> `to-spec` -> `to-tickets` -> implementation -> review flow.
 - Added `domain-modeling` to clarify project vocabulary and maintain `.ai/domain.md` through approved memory updates.

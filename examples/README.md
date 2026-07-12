@@ -15,6 +15,7 @@ grill-notes.md
 ## Available Walkthroughs
 
 - [Billing Settings](workflows/billing-settings/) - a small B2B SaaS feature that moves from clarification to spec, tickets, implementation notes, and review.
+- [Configure Project](workflows/configure-project/) - an example `Configured Project Plan` after project init with profile-aware gaps and command verification status.
 
 ## How To Read These
 

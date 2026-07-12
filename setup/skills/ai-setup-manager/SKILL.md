@@ -45,6 +45,7 @@ Use the current directory as the project unless the user gives a path. Run `./in
 Read or inspect, when present:
 
 - `AGENTS.md`, `CLAUDE.md`, `.ai/`
+- `.ai/profile.md` and `~/.agents/ai-setup/install.json` profile metadata when available
 - `README.md`, `Makefile`, CI workflows, Docker/compose files
 - package/config files such as `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `Gemfile`, `composer.json`, `tailwind.config.*`, `vite.config.*`
 - source, test, docs, config, and app entry directories at a shallow depth
@@ -53,11 +54,23 @@ Read or inspect, when present:
 
 Inspect before asking. Ask only for facts that cannot be discovered and would materially change the written files.
 
+### Apply profile lens
+
+If `.ai/profile.md` exists, use it as a lens for gaps and questions. Do not force profile assumptions into project facts.
+
+- `saas`: check workspace/tenant/account language, auth, roles, billing, onboarding, dashboards, settings, analytics, and support workflows.
+- `enterprise`: check access control, audit logs, compliance evidence, imports/exports, migrations, background jobs, approval workflows, and dense operational UI.
+- `mobile`: check platform, device sizes, navigation, permissions, offline/sync behavior, push/deep links, accessibility, localization, release flow, and crash monitoring.
+- `core` or unknown: keep guidance general and avoid domain-specific assumptions.
+
+Profile-specific findings belong in the configuration plan as gaps or proposed `.ai/profile.md` refinements, not as fabricated project facts.
+
 ### Draft destinations
 
 Prepare concise proposed updates for:
 
 - `.ai/project-context.md`: purpose, primary users, architecture, constraints, important paths.
+- `.ai/profile.md`: keep, refine, or remove profile guidance based on observed project type.
 - `.ai/agent-workflow.md`: main idea-to-implementation flow, artifact locations, human gates, and review expectations.
 - `.ai/issue-tracker.md`: local Markdown or external tracker choice, labels/statuses, blocker representation, and permission rules.
 - `.ai/domain.md`: project vocabulary, overloaded terms, naming guidance, and linked decisions.
@@ -71,21 +84,34 @@ Commands are verified only when actually run or copied from trusted project docs
 
 For design, do not invent visual direction. If no design source exists, write the known product/UI facts and ask whether to run `human-ui-designer` for theme discovery before filling visual rules.
 
-### Present before writing
+### Configuration plan output
 
-Show a configuration plan with:
+Before writing, present a `Configured Project Plan` with:
 
-- Evidence inspected.
-- Proposed destination files.
-- Exact text or section-level changes to write.
+- Project path and detected profile.
+- Evidence inspected, grouped by source file or directory.
+- Facts found, with source paths.
+- Proposed destination files and section-level changes.
+- Commands:
+  - Verified: commands actually run or copied from trusted docs/CI.
+  - Candidate: inferred commands not yet run.
+  - Dangerous or approval-required: commands that mutate data, infrastructure, secrets, deployments, or external systems.
+- Design source status:
+  - Existing source found.
+  - No source found; theme discovery recommended.
+  - Source ambiguous; ask for user decision.
+- Profile-specific gaps and questions.
 - Unknowns that will remain as `TODO` or `Unknown`.
 - Risk if wrong.
+- Exact write batch proposed.
 
-Ask before editing. Apply one safe batch at a time.
+### Present before writing
+
+Ask before editing. Apply one safe batch at a time. Preserve existing non-placeholder project instructions. If existing files conflict, report the conflict and propose a merge instead of replacing content.
 
 ### After writing
 
-Run `./install.sh --audit-project <path>` when available. Report files updated, commands verified or left as candidates, design gaps, and recommended next workflow.
+Run `./install.sh --audit-project <path>` when available. Report files updated, commands verified or left as candidates, profile assumptions used, design gaps, and recommended next workflow.
 
 ## Standardize project workflow
 

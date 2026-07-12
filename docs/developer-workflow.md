@@ -227,6 +227,8 @@ For executable behavior, prefer seam-first feedback: identify the public seam, a
 
 ## Worked Examples
 
+Use [examples/workflows/configure-project](../examples/workflows/configure-project) as the reference shape for first-run project configuration after init.
+
 Use [examples/workflows/billing-settings](../examples/workflows/billing-settings) as the reference shape for a complete feature workflow:
 
 ```text
@@ -258,6 +260,8 @@ The example is intentionally framework-neutral. Real projects should replace pla
 ```
 
 `/ai-setup-configure-project` should inspect the repo after init, draft `.ai/project-context.md`, `.ai/agent-workflow.md`, `.ai/issue-tracker.md`, `.ai/domain.md`, `.ai/tech-stack.md`, `.ai/commands.md`, `.ai/DESIGN.md`, `.ai/styleguide.md`, and styleguide updates from evidence, then ask before writing. Commands should be marked verified only when actually run or sourced from trusted project docs/CI.
+
+When `.ai/profile.md` exists, `/ai-setup-configure-project` should read it and tailor gaps/questions to the selected profile. It should present a `Configured Project Plan` with inspected evidence, detected profile, proposed writes, verified vs candidate commands, design-source status, unknowns, and risk before editing.
 
 ```text
 /ai-setup-audit check this repo's AI setup

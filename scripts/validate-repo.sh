@@ -283,6 +283,8 @@ done
 
 required_example_files=(
   "README.md"
+  "workflows/configure-project/README.md"
+  "workflows/configure-project/configuration-plan.md"
   "workflows/billing-settings/grill-notes.md"
   "workflows/billing-settings/spec.md"
   "workflows/billing-settings/tickets/01-user-can-view-billing-settings.md"
@@ -299,6 +301,18 @@ for rel in "${required_example_files[@]}"; do
     fail "example file missing: $rel"
   fi
 done
+
+if grep -Fq ".ai/profile.md" "$ROOT_DIR/setup/skills/ai-setup-manager/SKILL.md"; then
+  ok "ai-setup-manager is profile-aware"
+else
+  fail "ai-setup-manager missing profile-aware configure guidance"
+fi
+
+if grep -Fq "Configured Project Plan" "$ROOT_DIR/setup/claude-commands/ai-setup-configure-project.md"; then
+  ok "configure-project command requests a configuration plan"
+else
+  fail "configure-project command missing configuration plan guidance"
+fi
 
 for rel in "setup/global-files/AGENTS.md" "setup/global-files/CLAUDE.md" "setup/project-kit"; do
   if grep -Fq "\"$rel\"" "$ROOT_DIR/profiles/core.json"; then

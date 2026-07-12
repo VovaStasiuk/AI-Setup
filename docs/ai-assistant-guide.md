@@ -68,7 +68,7 @@ Project configuration after init:
 /ai-setup-configure-project
 ```
 
-Use this after project init to inspect the repo and draft `.ai` project facts, commands, design, and styleguide updates. The assistant must ask before writing and must mark inferred-but-unverified commands as candidates.
+Use this after project init to inspect the repo and draft `.ai` project facts, commands, design, profile, and styleguide updates. The assistant must ask before writing, read `.ai/profile.md` when present, and mark inferred-but-unverified commands as candidates.
 
 Health check:
 
@@ -129,7 +129,7 @@ Before project init, inspect:
 
 If files exist, merge manually or let installer skip them. Avoid `--force` unless the user explicitly wants replacement.
 
-After project init, use `/ai-setup-configure-project` or ask an assistant to use `ai-setup-manager` to configure the project. It should inspect before asking, draft updates with evidence, and preserve unknowns as `TODO` or `Unknown` instead of guessing.
+After project init, use `/ai-setup-configure-project` or ask an assistant to use `ai-setup-manager` to configure the project. It should inspect before asking, draft a `Configured Project Plan` with evidence, detected profile, proposed file updates, verified vs candidate commands, design-source status, profile-specific gaps, and preserve unknowns as `TODO` or `Unknown` instead of guessing.
 
 ## Customization rules
 

@@ -231,7 +231,7 @@ Use human-ui-designer to design this.
 
 For the full development flow and skill-by-skill map, see [docs/developer-workflow.md](docs/developer-workflow.md).
 
-For a concrete walkthrough of the full flow from clarification notes to spec, tickets, implementation notes, and review, see [examples/workflows/billing-settings](examples/workflows/billing-settings).
+For concrete walkthroughs, see [examples/workflows/configure-project](examples/workflows/configure-project) for first-run project configuration and [examples/workflows/billing-settings](examples/workflows/billing-settings) for the feature workflow from clarification notes to spec, tickets, implementation notes, and review.
 
 ## Repository Layout
 

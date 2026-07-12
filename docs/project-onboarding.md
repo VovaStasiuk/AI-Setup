@@ -36,7 +36,7 @@ In Claude, use:
 /ai-setup-configure-project
 ```
 
-The assistant should inspect existing docs, configs, source layout, commands, design sources, and styleguides, then draft updates before writing.
+The assistant should inspect existing docs, configs, source layout, commands, design sources, styleguides, and `.ai/profile.md` when present. It should draft a `Configured Project Plan` before writing.
 
 For Codex or another assistant, ask:
 
@@ -44,7 +44,7 @@ For Codex or another assistant, ask:
 Use ai-setup-manager to configure this project after AI Setup init.
 ```
 
-Review the proposed changes before approving writes.
+Review the proposed changes before approving writes. The plan should separate verified commands from candidate commands and list profile-specific gaps or questions.
 
 ## 4. Fill Or Review Project Files
 
