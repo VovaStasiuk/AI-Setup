@@ -168,6 +168,25 @@ for rel in "${required_project_kit_files[@]}"; do
   fi
 done
 
+required_example_files=(
+  "README.md"
+  "workflows/billing-settings/grill-notes.md"
+  "workflows/billing-settings/spec.md"
+  "workflows/billing-settings/tickets/01-user-can-view-billing-settings.md"
+  "workflows/billing-settings/tickets/02-admin-can-update-billing-contact.md"
+  "workflows/billing-settings/tickets/03-review-billing-settings-permissions.md"
+  "workflows/billing-settings/implementation-notes.md"
+  "workflows/billing-settings/review.md"
+)
+
+for rel in "${required_example_files[@]}"; do
+  if [[ -f "$ROOT_DIR/examples/$rel" ]]; then
+    ok "example file exists: $rel"
+  else
+    fail "example file missing: $rel"
+  fi
+done
+
 for rel in "setup/global-files/AGENTS.md" "setup/global-files/CLAUDE.md" "setup/project-kit"; do
   if grep -Fq "\"$rel\"" "$ROOT_DIR/profiles/core.json"; then
     ok "core profile references existing path: $rel"

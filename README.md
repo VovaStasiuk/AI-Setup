@@ -216,11 +216,14 @@ Use human-ui-designer to design this.
 
 For the full development flow and skill-by-skill map, see [docs/developer-workflow.md](docs/developer-workflow.md).
 
+For a concrete walkthrough of the full flow from clarification notes to spec, tickets, implementation notes, and review, see [examples/workflows/billing-settings](examples/workflows/billing-settings).
+
 ## Repository Layout
 
 ```text
 AGENTS.md
 CLAUDE.md
+examples/
 setup/
   skills/
   global-files/

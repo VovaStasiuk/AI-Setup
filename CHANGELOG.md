@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added a Billing Settings worked example that shows the full `grill-with-context` -> `to-spec` -> `to-tickets` -> implementation -> review flow.
 - Added `domain-modeling` to clarify project vocabulary and maintain `.ai/domain.md` through approved memory updates.
 - Added `tdd-seams` to guide test-first implementation through public seams and avoid weak tests.
 - Strengthened `implementation-agent` to use seam-first, focused verification loops for non-trivial work.

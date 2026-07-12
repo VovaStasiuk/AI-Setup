@@ -225,6 +225,20 @@ For implementation work, run a local final review pass before the final response
 
 For executable behavior, prefer seam-first feedback: identify the public seam, add or name the focused failing check where practical, implement one vertical slice, and run the focused verification before moving on.
 
+## Worked Examples
+
+Use [examples/workflows/billing-settings](../examples/workflows/billing-settings) as the reference shape for a complete feature workflow:
+
+```text
+grill-with-context
+-> to-spec
+-> to-tickets
+-> implementation-agent with tdd-seams
+-> code-review-swe
+```
+
+The example is intentionally framework-neutral. Real projects should replace placeholder verification commands with commands from `.ai/commands.md` and keep project facts in the local `.ai/` directory.
+
 ## Example Prompts
 
 ```text
