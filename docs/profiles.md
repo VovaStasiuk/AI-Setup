@@ -2,6 +2,8 @@
 
 Profiles tune the install and project starter kit for a project type without bloating the global bootstrap.
 
+For tool selection, copy-vs-link guidance, and a first-project checklist, see [Team Onboarding](team-onboarding.md).
+
 List profiles:
 
 ```bash

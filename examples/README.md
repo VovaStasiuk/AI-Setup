@@ -14,6 +14,7 @@ grill-notes.md
 
 ## Available Walkthroughs
 
+- [SaaS Team Rollout](onboarding/team-rollout.md) - a new teammate installs Claude + Codex support, initializes a SaaS project, and completes approval-gated project configuration.
 - [Billing Settings](workflows/billing-settings/) - a small B2B SaaS feature that moves from clarification to spec, tickets, implementation notes, and review.
 - [Configure Project](workflows/configure-project/) - an example `Configured Project Plan` after project init with profile-aware gaps and command verification status.
 

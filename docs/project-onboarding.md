@@ -2,6 +2,8 @@
 
 Use this when adding AI Setup to an existing project.
 
+If the teammate has not chosen Claude/Codex targets, copy-vs-link mode, or a project profile yet, start with [Team Onboarding](team-onboarding.md) or `/ai-setup-onboard-team`.
+
 ## 1. Dry-run
 
 ```bash

@@ -156,6 +156,18 @@ for expected_profile in core saas enterprise mobile; do
   fi
 done
 
+required_claude_commands=(
+  "ai-setup-onboard-team"
+)
+
+for command in "${required_claude_commands[@]}"; do
+  if [[ -f "$ROOT_DIR/setup/claude-commands/$command.md" ]]; then
+    ok "required Claude command exists: /$command"
+  else
+    fail "required Claude command missing: /$command"
+  fi
+done
+
 while IFS= read -r profile_file; do
   profile="$(basename "$profile_file" .json)"
   profile_name="$(json_string_value name "$profile_file")"
@@ -283,6 +295,7 @@ done
 
 required_example_files=(
   "README.md"
+  "onboarding/team-rollout.md"
   "workflows/configure-project/README.md"
   "workflows/configure-project/configuration-plan.md"
   "workflows/billing-settings/grill-notes.md"
@@ -299,6 +312,18 @@ for rel in "${required_example_files[@]}"; do
     ok "example file exists: $rel"
   else
     fail "example file missing: $rel"
+  fi
+done
+
+required_docs=(
+  "team-onboarding.md"
+)
+
+for rel in "${required_docs[@]}"; do
+  if [[ -f "$ROOT_DIR/docs/$rel" ]]; then
+    ok "required doc exists: $rel"
+  else
+    fail "required doc missing: $rel"
   fi
 done
 

@@ -2,6 +2,8 @@
 
 Use this guide when an AI assistant is helping a developer install, customize, or extend AI Setup.
 
+In Claude, `/ai-setup-onboard-team` runs this choice-and-confirmation flow and produces exact global install and project-init commands. It may run read-only checks and dry-runs before confirmation, but every real install, init, update, or file write requires explicit approval.
+
 ## Recommended conversation flow
 
 1. Ask what environment they want to support:
