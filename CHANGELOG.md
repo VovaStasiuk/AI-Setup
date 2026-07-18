@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added isolated installer coverage for tool/mode/profile routes, onboarding-wrapper safety contracts, local Markdown link checking in CI, a fresh-user usability protocol, and a pinned team update policy.
 - Added team onboarding documentation, quick-path README recipes, `/ai-setup-onboard-team`, and a complete SaaS teammate rollout example with approval-gated install and project configuration.
 - Added `./install.sh --status` to detect installed-vs-source drift for skills, command wrappers, global bootstraps, and install metadata before updating.
 - Made `/ai-setup-configure-project` profile-aware with a concrete `Configured Project Plan` output contract and example.

@@ -4,6 +4,8 @@ Use this guide to give a new teammate the same AI Setup baseline as the rest of 
 
 For guided onboarding in Claude, run `/ai-setup-onboard-team`. It produces the same dry-run, install, and project-init commands and waits for confirmation before any write.
 
+Before a broad rollout, run the [fresh-user usability test](team-onboarding-usability-test.md) with one Claude-only teammate and one Codex-only teammate. Automated installer checks do not replace this observation step.
+
 ## Choose Target Tools
 
 ### Claude Only
@@ -109,3 +111,35 @@ Then configure project facts, commands, domain language, design sources, and pro
 ```
 
 The configuration workflow must inspect the repository first, separate verified commands from candidates, preserve non-placeholder instructions, and ask before writing. A complete SaaS walkthrough is available in [examples/onboarding/team-rollout.md](../examples/onboarding/team-rollout.md).
+
+## Adopt Team Defaults
+
+Record these choices in the team's normal engineering handbook or project docs so each teammate does not invent a different install path:
+
+```text
+AI Setup owner: <name or team>
+Approved version/tag: <tag>
+Source location: <repository URL>
+Target tools: <--claude, --codex, or --all>
+Project profile: <core, saas, enterprise, or mobile>
+Install mode: <--copy or --link>
+Update cadence: <for example, monthly or per approved release>
+Support channel: <team channel or issue tracker>
+```
+
+Pin an approved tag for team rollouts, especially while AI Setup is alpha. The owner should validate a candidate version before changing the team default. Teammates using copy mode may remove the source clone after successful checks, but they need to clone or download the approved version again for future updates. Link-mode users must keep the source clone at a stable path.
+
+## Team Update Procedure
+
+The owner first runs the repository validation suite against the candidate tag and records any migration notes. Each teammate then checks out or downloads that exact tag and uses the same tool, profile, and mode choices as their original install:
+
+```bash
+git checkout <approved-tag>
+./install.sh --profile <profile> --status
+./install.sh --dry-run --profile <profile> <tool-flag> <mode> --update
+./install.sh --profile <profile> <tool-flag> <mode> --update
+./install.sh --doctor
+./install.sh --profile <profile> --status
+```
+
+Run the real update only after reviewing its dry-run. Do not silently move teammates to a different profile, tool target, or install mode as part of a routine update; treat those as separate onboarding decisions.

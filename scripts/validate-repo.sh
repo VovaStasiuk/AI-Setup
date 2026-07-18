@@ -101,6 +101,12 @@ json_array_values() {
 
 log "AI Setup repository validation"
 
+if bash "$ROOT_DIR/scripts/check-markdown-links.sh"; then
+  ok "local Markdown links resolve"
+else
+  fail "local Markdown links are broken"
+fi
+
 if [[ -d "$ROOT_DIR/setup/skills" ]]; then
   ok "setup/skills exists"
 else
@@ -253,6 +259,33 @@ while IFS= read -r command_file; do
   fi
 done < <(find "$ROOT_DIR/setup/claude-commands" -mindepth 1 -maxdepth 1 -type f -name '*.md' | sort)
 
+onboarding_command="$ROOT_DIR/setup/claude-commands/ai-setup-onboard-team.md"
+backtick='`'
+required_onboarding_contract=(
+  "manager skill|Use ${backtick}ai-setup-manager${backtick}."
+  "tool choices|${backtick}--claude${backtick}, ${backtick}--codex${backtick}, or ${backtick}--all${backtick}"
+  "profile choices|${backtick}core${backtick}, ${backtick}saas${backtick}, ${backtick}enterprise${backtick}, or ${backtick}mobile${backtick}"
+  "mode choices|${backtick}--copy${backtick} or ${backtick}--link${backtick}"
+  "command plan|Present an ${backtick}Onboarding Command Plan${backtick}"
+  'global dry-run|./install.sh --dry-run --profile <profile> <tool-flag> <mode>'
+  'project dry-run|./install.sh --dry-run --profile <profile> --init-project <path>'
+  "post-install doctor|${backtick}./install.sh --doctor${backtick}"
+  "post-install status|${backtick}./install.sh --status${backtick}"
+  "post-install configure|${backtick}/ai-setup-configure-project${backtick}"
+  "mutation confirmation|Never run a real install, project init, update, use ${backtick}--force${backtick}, or edit project files until the user explicitly confirms"
+  'separate approval gates|Treat global install and project init as separate approval gates'
+)
+
+for contract in "${required_onboarding_contract[@]}"; do
+  contract_name="${contract%%|*}"
+  contract_fragment="${contract#*|}"
+  if grep -Fq -- "$contract_fragment" "$onboarding_command"; then
+    ok "onboarding command contract: $contract_name"
+  else
+    fail "onboarding command missing contract: $contract_name"
+  fi
+done
+
 required_project_kit_files=(
   "AGENTS.md"
   "CLAUDE.md"
@@ -317,6 +350,7 @@ done
 
 required_docs=(
   "team-onboarding.md"
+  "team-onboarding-usability-test.md"
 )
 
 for rel in "${required_docs[@]}"; do

@@ -22,16 +22,17 @@ Thanks for your interest. AI Setup is an installer/template project for portable
 
    It uses a temporary `HOME` so your real config stays untouched.
 
-4. Validate repository metadata:
+4. Validate repository links and metadata:
 
    ```bash
+   bash scripts/check-markdown-links.sh
    bash scripts/validate-repo.sh
    ```
 
 5. Lint the installer:
 
    ```bash
-   shellcheck install.sh scripts/test-install.sh scripts/validate-repo.sh
+   shellcheck install.sh scripts/check-markdown-links.sh scripts/test-install.sh scripts/validate-repo.sh
    ```
 
 6. Verify dry-run output for any installer flag you touched:

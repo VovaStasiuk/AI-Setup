@@ -181,6 +181,7 @@ After adding a skill:
 - Add a Claude command only if there is a clear slash-command workflow.
 - Update README/workflow examples if the new skill changes the recommended path.
 - Run `bash scripts/validate-repo.sh` to catch profile, README, command, and project-kit drift.
+- Run `bash scripts/check-markdown-links.sh` to catch broken repository-local documentation links.
 - Run installer dry-runs.
 
 ## Answering user questions

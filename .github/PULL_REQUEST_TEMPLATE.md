@@ -14,7 +14,8 @@ What changed and why.
 ## Verification
 
 - [ ] `bash scripts/validate-repo.sh`
-- [ ] `shellcheck install.sh scripts/test-install.sh scripts/validate-repo.sh`
+- [ ] `bash scripts/check-markdown-links.sh`
+- [ ] `shellcheck install.sh scripts/check-markdown-links.sh scripts/test-install.sh scripts/validate-repo.sh`
 - [ ] `./install.sh --dry-run --all`
 - [ ] `./scripts/test-install.sh`
 - [ ] `CHANGELOG.md` updated

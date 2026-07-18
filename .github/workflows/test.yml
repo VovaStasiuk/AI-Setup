@@ -14,8 +14,11 @@ jobs:
       - name: validate repo metadata
         run: bash scripts/validate-repo.sh
 
+      - name: check local Markdown links
+        run: bash scripts/check-markdown-links.sh
+
       - name: shellcheck
-        run: shellcheck install.sh scripts/test-install.sh scripts/validate-repo.sh
+        run: shellcheck install.sh scripts/check-markdown-links.sh scripts/test-install.sh scripts/validate-repo.sh
 
       - name: dry-run all
         run: ./install.sh --dry-run --all

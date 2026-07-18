@@ -299,6 +299,8 @@ If you want Claude, Codex, or another AI coding assistant to help install or cus
 - `AGENTS.md`
 - `docs/ai-assistant-guide.md`
 - `docs/developer-workflow.md`
+- `docs/team-onboarding.md`
+- `docs/team-onboarding-usability-test.md`
 - `docs/limitations.md`
 - `docs/security.md`
 
@@ -315,4 +317,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Security issues: see [SECURITY.md](SECUR
 ## Roadmap
 
 - Optional sync/update script.
-- More installer tests.
