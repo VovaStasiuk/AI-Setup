@@ -112,12 +112,13 @@ engineering-baseline
 -> human-ui-designer
 -> design-source gate
 -> identify golden local examples when existing UI is available
+-> bounded design-intelligence pass only for unresolved choices
 -> theme discovery if palette/typography/direction is unclear
 -> DESIGN.md or feature DESIGN.md if needed
--> design contract
+-> design contract including responsive, accessibility, interaction, and motion rules
 -> pencil-design if Pencil/.pen is the selected route
 -> implementation
--> screenshot verification
+-> screenshot + interaction + accessibility + motion verification
 ```
 
 The agent must not guess visual style when project design direction is unclear.
@@ -125,6 +126,8 @@ The agent must not guess visual style when project design direction is unclear.
 When existing UI is available, the agent should extract rules from 2-5 golden local examples before designing. This prevents generic AI-looking screens and avoids treating old mockups or external screenshots as global style.
 
 For theme discovery, the agent may suggest 3-5 directions inspired by getdesign.md or awesome-design-md, including palette, typography, density, component feel, and anti-patterns. The chosen direction must be converted into `DESIGN.md` before coding.
+
+UI/UX Pro Max may be used as an optional design-intelligence source for focused palette, typography, layout, stack, accessibility, data-visualization, or motion questions. It must not replace project sources, self-certify its recommendations, write generated design files, add dependencies, or install/update itself without confirmation. Accepted recommendations belong in the project design contract and must still be verified against the running UI.
 
 ### Research
 

@@ -1,3 +1,3 @@
 Use `engineering-baseline`, then `human-ui-designer`.
 
-Design or improve the requested UI. First run the design-source gate. If no clear design source exists, ask before creating a project or feature DESIGN.md. Create a design contract before coding and verify with screenshots when practical.
+Design or improve the requested UI. First run the design-source gate and extract golden local examples when available. If a meaningful choice remains unresolved, run the bounded design-intelligence pass; UI/UX Pro Max is optional and must not override project sources or install, persist, overwrite, or add dependencies without confirmation. Create a design contract that covers responsive states, accessibility, interaction, motion purpose, reduced motion, and performance limits before coding. Verify with screenshots and practical interaction, accessibility, and motion checks; state every check that could not be run.

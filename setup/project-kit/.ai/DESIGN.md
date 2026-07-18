@@ -9,6 +9,9 @@ If this file is incomplete, agents must ask before inventing visual direction fo
 - Core workflows:
 - Usage frequency:
 - Density expectation:
+- Target platforms:
+- Frontend stack:
+- Existing design/animation dependencies:
 
 ## Reference Priority
 
@@ -39,6 +42,8 @@ List the strongest local examples before designing a new screen.
 
 - Personality:
 - Density:
+- Variance: restrained / balanced / expressive
+- Motion: subtle / standard / choreographed
 - Light/dark mode:
 - Layout rhythm:
 - Border/radius/shadow style:
@@ -46,6 +51,17 @@ List the strongest local examples before designing a new screen.
 - Motion style:
 - References:
 - Avoid:
+
+## Motion Contract
+
+- Purpose:
+- Triggers:
+- Entry/exit behavior:
+- Duration/easing:
+- Interruption behavior:
+- Scroll behavior:
+- Reduced-motion fallback:
+- Performance limits:
 
 ## Foundations
 
@@ -92,6 +108,15 @@ List the strongest local examples before designing a new screen.
 - Long text / overflow:
 - Mobile / narrow viewport:
 
+## Accessibility and Interaction
+
+- Keyboard path and visible focus:
+- Contrast requirements:
+- Touch targets:
+- Hover alternatives:
+- Zoom/reflow:
+- Loading and action feedback:
+
 ## Visual Acceptance Criteria
 
 Before calling UI work complete, verify:
@@ -103,6 +128,8 @@ Before calling UI work complete, verify:
 - Tables/lists are decision-useful, not decorative.
 - Primary and destructive actions have correct visual weight.
 - Loading, empty, error, disabled, and permission states are handled when relevant.
+- Keyboard, focus, contrast, zoom/reflow, touch, and non-hover behavior are checked when relevant.
+- Motion has a product purpose, remains interruptible, avoids layout shift, and respects reduced-motion preferences.
 - Screenshot verification was performed, or the reason it was not possible is stated.
 
 ## Screenshot Checks
@@ -111,4 +138,7 @@ Before calling UI work complete, verify:
 - Mobile/narrow:
 - Dark mode:
 - Important states checked:
+- Keyboard/focus/contrast checked:
+- Motion/reduced-motion checked:
+- Performance/layout stability checked:
 - Visible drift / remaining polish:
