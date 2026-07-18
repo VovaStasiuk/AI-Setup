@@ -73,8 +73,8 @@ Avoid putting project-specific stack details into global skills.
 
 Use `grill-with-context` before planning. It should inspect relevant project
 docs/code, ask one focused question at a time, clarify shared language, and ask
-whether to propose doc updates at the end. Keep `grill-me` only as a backward
-compatible alias.
+whether to propose doc updates at the end. Natural-language requests such as
+"grill me" route to this skill.
 
 ### Add a new skill
 

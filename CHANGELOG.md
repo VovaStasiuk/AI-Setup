@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Removed the redundant `grill-me` skill and `/grill-me` command; natural-language "grill me" requests now route only to `grill-with-context`, and updates safely retire recognizable AI Setup-owned copies.
 - Strengthened `human-ui-designer` with a bounded UI/UX Pro Max-inspired intelligence pass, explicit quality priorities, motion and reduced-motion contracts, and interaction/accessibility verification requirements.
 - Added isolated installer coverage for tool/mode/profile routes, onboarding-wrapper safety contracts, local Markdown link checking in CI, a fresh-user usability protocol, and a pinned team update policy.
 - Added team onboarding documentation, quick-path README recipes, `/ai-setup-onboard-team`, and a complete SaaS teammate rollout example with approval-gated install and project configuration.

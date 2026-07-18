@@ -432,6 +432,100 @@ command_names() {
   done
 }
 
+retired_skill_names() {
+  printf '%s\n' "grill-me"
+}
+
+retired_command_names() {
+  printf '%s\n' "grill-me.md"
+}
+
+is_recognizable_retired_skill_path() {
+  local path="$1"
+  local skill="$2"
+  local installed_source="$3"
+  local target=""
+  local entries=""
+  local signature=""
+
+  if [[ -L "$path" ]]; then
+    target="$(readlink "$path")"
+    [[ "$target" == "$ROOT_DIR/setup/skills/$skill" ]] && return 0
+    [[ "$target" == "$HOME/.agents/skills/$skill" ]] && return 0
+    [[ -n "$installed_source" && "$target" == "$installed_source/setup/skills/$skill" ]] && return 0
+    return 1
+  fi
+
+  [[ -d "$path" && -f "$path/SKILL.md" ]] || return 1
+  entries="$(find "$path" -mindepth 1 -maxdepth 1 -print | wc -l | tr -d '[:space:]')"
+  [[ "$entries" == "1" ]] || return 1
+  signature="$(cksum "$path/SKILL.md" | awk '{ print $1 ":" $2 }')"
+  [[ "$skill:$signature" == "grill-me:4174658549:1398" ]]
+}
+
+is_recognizable_retired_command_path() {
+  local path="$1"
+  local signature=""
+
+  [[ -f "$path" && ! -L "$path" ]] || return 1
+  signature="$(cksum "$path" | awk '{ print $1 ":" $2 }')"
+  [[ "$signature" == "2411709528:405" ]]
+}
+
+retire_skill_path() {
+  local label="$1"
+  local path="$2"
+  local skill="$3"
+  local installed_source="$4"
+
+  [[ -e "$path" || -L "$path" ]] || return 0
+  if is_recognizable_retired_skill_path "$path" "$skill" "$installed_source"; then
+    log "retire AI Setup skill $skill: $label -> $path"
+    run rm -rf "$path"
+  else
+    log "preserve unrecognized retired skill path: $label -> $path"
+  fi
+}
+
+retire_command_path() {
+  local path="$1"
+  local command="$2"
+
+  [[ -e "$path" || -L "$path" ]] || return 0
+  if is_recognizable_retired_command_path "$path"; then
+    log "retire AI Setup command $command: $path"
+    run rm -f "$path"
+  else
+    log "preserve unrecognized retired command path: $path"
+  fi
+}
+
+cleanup_retired_install() {
+  local cleanup_commands="${1:-$DO_COMMANDS}"
+  local metadata="$HOME/.agents/ai-setup/install.json"
+  local installed_source=""
+  local skill
+  local command
+
+  if [[ ! -f "$metadata" ]]; then
+    log "skip retired path cleanup: AI Setup install metadata is missing"
+    return 0
+  fi
+
+  installed_source="$(json_string_value "source_path" "$metadata")"
+  while IFS= read -r skill; do
+    retire_skill_path "codex" "$HOME/.codex/skills/$skill" "$skill" "$installed_source"
+    retire_skill_path "claude" "$HOME/.claude/skills/$skill" "$skill" "$installed_source"
+    retire_skill_path "canonical" "$HOME/.agents/skills/$skill" "$skill" "$installed_source"
+  done < <(retired_skill_names)
+
+  if [[ "$cleanup_commands" == "1" ]]; then
+    while IFS= read -r command; do
+      retire_command_path "$HOME/.claude/commands/$command" "$command"
+    done < <(retired_command_names)
+  fi
+}
+
 paths_match() {
   local src="$1"
   local dst="$2"
@@ -511,6 +605,31 @@ status_extra_source_skills() {
   done < <(skill_names)
 }
 
+status_retired_skill_root() {
+  local label="$1"
+  local target_root="$2"
+  local skill
+
+  while IFS= read -r skill; do
+    if [[ -e "$target_root/$skill" || -L "$target_root/$skill" ]]; then
+      log "retired: $label skill $skill -> $target_root/$skill"
+      STATUS_EXTRA=$((STATUS_EXTRA + 1))
+    fi
+  done < <(retired_skill_names)
+}
+
+status_retired_command_root() {
+  local target_root="$1"
+  local command
+
+  while IFS= read -r command; do
+    if [[ -e "$target_root/$command" || -L "$target_root/$command" ]]; then
+      log "retired: claude command $command -> $target_root/$command"
+      STATUS_EXTRA=$((STATUS_EXTRA + 1))
+    fi
+  done < <(retired_command_names)
+}
+
 install_status() {
   local metadata="$HOME/.agents/ai-setup/install.json"
   local source_rev
@@ -581,12 +700,14 @@ install_status() {
   log "Canonical shared skills"
   status_skill_root "canonical" "$HOME/.agents/skills" "$active_skills"
   status_extra_source_skills "canonical" "$HOME/.agents/skills" "$active_skills"
+  status_retired_skill_root "canonical" "$HOME/.agents/skills"
 
   if [[ "$check_codex" == "1" ]]; then
     log ""
     log "Codex install"
     status_skill_root "codex" "$HOME/.codex/skills" "$active_skills"
     status_extra_source_skills "codex" "$HOME/.codex/skills" "$active_skills"
+    status_retired_skill_root "codex" "$HOME/.codex/skills"
     if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
       status_path "codex global AGENTS" "$ROOT_DIR/setup/global-files/AGENTS.md" "$HOME/.codex/AGENTS.md" 1 || true
     fi
@@ -597,6 +718,7 @@ install_status() {
     log "Claude install"
     status_skill_root "claude" "$HOME/.claude/skills" "$active_skills"
     status_extra_source_skills "claude" "$HOME/.claude/skills" "$active_skills"
+    status_retired_skill_root "claude" "$HOME/.claude/skills"
     if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
       status_path "claude global CLAUDE" "$ROOT_DIR/setup/global-files/CLAUDE.md" "$HOME/.claude/CLAUDE.md" 1 || true
     fi
@@ -606,6 +728,7 @@ install_status() {
       while IFS= read -r cmd; do
         status_path "claude command $cmd" "$ROOT_DIR/setup/claude-commands/$cmd" "$HOME/.claude/commands/$cmd" || true
       done < <(command_names)
+      status_retired_command_root "$HOME/.claude/commands"
     fi
   fi
 
@@ -879,6 +1002,7 @@ update_install() {
   fi
 
   log "updating AI Setup"
+  cleanup_retired_install
   refresh_shared_skills
 
   if [[ "$DO_CODEX" == "1" ]]; then
@@ -915,6 +1039,8 @@ update_install() {
 
 uninstall_setup() {
   log "uninstalling AI Setup"
+
+  cleanup_retired_install 1
 
   for skill in $(skill_names); do
     run rm -rf "$HOME/.agents/skills/$skill"

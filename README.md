@@ -51,7 +51,6 @@ Use `/ai-setup-onboard-team` for an approval-gated command plan, or see the [tea
   - `engineering-baseline`
   - `developer-orchestrator`
   - `grill-with-context`
-  - `grill-me`
   - `domain-modeling`
   - `feature-planner`
   - `to-spec`
@@ -81,7 +80,6 @@ Use `/ai-setup-onboard-team` for an approval-gated command plan, or see the [tea
   - `/to-spec`
   - `/to-tickets`
   - `/grill-with-context`
-  - `/grill-me`
   - `/implement`
   - `/review-code`
   - `/design-ui`

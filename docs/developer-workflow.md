@@ -29,7 +29,6 @@ Project files override global skills.
 | `engineering-baseline` | Any non-trivial engineering task | Simple, scoped, evidence-driven behavior |
 | `developer-orchestrator` | More than one route/tool may apply | Route recommendation and fallback |
 | `grill-with-context` | Idea is vague or needs pressure-testing, especially inside a codebase | Decisions, shared language, candidate doc updates, open questions, next route |
-| `grill-me` | Backward-compatible alias for old "grill me" prompts | Routes to `grill-with-context` when available |
 | `domain-modeling` | Terms, lifecycle/status language, ownership, scope, or naming is ambiguous | Shared vocabulary, overloaded terms, proposed `.ai/domain.md` update |
 | `feature-planner` | Feature/change needs a spec or plan | Decision-complete plan with tests |
 | `to-spec` | Conversation or approved plan needs a stable spec | Decision-complete spec with assumptions, testing decisions, and next step |
