@@ -381,6 +381,23 @@ for rel in "setup/global-files/AGENTS.md" "setup/global-files/CLAUDE.md" "setup/
   fi
 done
 
+implementation_skill="$ROOT_DIR/setup/skills/implementation-agent/SKILL.md"
+required_implementation_comment_contract=(
+  "history ban|Do not leave investigation history, bug narratives, before/after explanations, or change logs in code comments."
+  "stable why|Use a code comment only when the code cannot clearly express a stable, non-obvious reason, invariant, external constraint, or safety requirement."
+  "comment review|Before finishing, review every comment added or substantially changed and remove or shorten anything"
+)
+
+for contract in "${required_implementation_comment_contract[@]}"; do
+  contract_name="${contract%%|*}"
+  contract_fragment="${contract#*|}"
+  if grep -Fq -- "$contract_fragment" "$implementation_skill"; then
+    ok "implementation comment contract: $contract_name"
+  else
+    fail "implementation-agent missing comment contract: $contract_name"
+  fi
+done
+
 if grep -R "graphify" "$ROOT_DIR/setup/global-files" >/dev/null; then
   fail "global bootstrap references optional graphify skill"
 else

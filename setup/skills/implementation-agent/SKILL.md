@@ -19,6 +19,17 @@ Use `engineering-baseline` first. Use `developer-orchestrator` when another mode
 8. Summarize behavior changed, files touched, checks run, and remaining risk.
 9. If implementation reveals a reusable project pattern or command gotcha, propose a `project-memory-curator` update with evidence.
 
+## Code comment discipline
+
+- Prefer clear names, small functions, types, and tests over explanatory comments.
+- Use a code comment only when the code cannot clearly express a stable, non-obvious reason, invariant, external constraint, or safety requirement.
+- Keep implementation comments to one short sentence when possible and no more than two short lines in normal cases.
+- Do not leave investigation history, bug narratives, before/after explanations, or change logs in code comments.
+- Do not restate the code or document how the agent discovered the fix. Put that context in the final summary, issue, spec, or decision record.
+- Before finishing, review every comment added or substantially changed and remove or shorten anything that does not protect a future maintainer from a likely misunderstanding or unsafe edit.
+
+For example, prefer `# Let the database enforce expression-based uniqueness; field validation still runs.` over a multi-line account of why the failing path was discovered. Keep longer inline documentation only when a public API, project convention, legal requirement, or safety-critical constraint genuinely requires it.
+
 Do not say tests/build/lint pass unless they were run and passed. If checks were skipped or failed, report that directly.
 If test-first work was skipped, state why and what verification replaced it.
 
