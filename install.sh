@@ -866,7 +866,15 @@ status_path() {
     return 1
   fi
 
-  if paths_match "$src" "$dst"; then
+  if [[ "${5:-0}" == "1" ]] && grep -Fq "$BLOCK_BEGIN" "$dst"; then
+    local block
+    block="$(awk -v b="$BLOCK_BEGIN" -v e="$BLOCK_END" '$0 == e { on = 0 } on { print } $0 == b { on = 1 }' "$dst")"
+    if [[ "$block" == "$(cat "$src")" ]]; then
+      log "match: $label (managed block) -> $dst"
+      STATUS_MATCHED=$((STATUS_MATCHED + 1))
+      return 0
+    fi
+  elif paths_match "$src" "$dst"; then
     log "match: $label -> $dst"
     STATUS_MATCHED=$((STATUS_MATCHED + 1))
     return 0
@@ -1013,7 +1021,7 @@ install_status() {
     status_extra_source_skills "codex" "$HOME/.codex/skills" "$active_skills"
     status_retired_skill_root "codex" "$HOME/.codex/skills"
     if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
-      status_path "codex global AGENTS" "$ROOT_DIR/setup/global-files/AGENTS.md" "$HOME/.codex/AGENTS.md" 1 || true
+      status_path "codex global AGENTS" "$ROOT_DIR/setup/global-files/AGENTS.md" "$HOME/.codex/AGENTS.md" 1 1 || true
     fi
   fi
 
@@ -1024,7 +1032,7 @@ install_status() {
     status_extra_source_skills "claude" "$HOME/.claude/skills" "$active_skills"
     status_retired_skill_root "claude" "$HOME/.claude/skills"
     if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
-      status_path "claude global CLAUDE" "$ROOT_DIR/setup/global-files/CLAUDE.md" "$HOME/.claude/CLAUDE.md" 1 || true
+      status_path "claude global CLAUDE" "$ROOT_DIR/setup/global-files/CLAUDE.md" "$HOME/.claude/CLAUDE.md" 1 1 || true
     fi
     if [[ "$DO_COMMANDS" == "1" ]]; then
       log ""
