@@ -1,0 +1,1 @@
+{ "name": "cheap-lane", "version": "0.1.0", "description": "Small jobs on small models without touching the main chat: /commit-msg (Haiku), /quick (Sonnet), /explain (Sonnet rewrites the last answer in plain words)" }

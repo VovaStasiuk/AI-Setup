@@ -8,7 +8,6 @@ This repo uses a portable Claude + Codex workflow.
 grill-with-context -> to-spec -> to-tickets -> implementation-agent -> code-review-swe
 ```
 
-Use `/ai-workflow` when the right route is unclear.
 
 ## Artifacts
 

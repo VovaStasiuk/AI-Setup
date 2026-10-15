@@ -1,0 +1,1 @@
+{ "name": "cockpit", "version": "0.2.0", "description": "One band above the prompt: cache timer, chat size, plan limits and cost with a handoff button; task progress with ETA; the /ship checklist; clickable next steps", "types": "./types/index.d.ts" }

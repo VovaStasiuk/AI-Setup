@@ -1,0 +1,1 @@
+{ "name": "file-guard", "version": "0.1.0", "description": "Asks before Claude edits a file another open chat changed in the last 30 minutes (Proceed or Cancel, no worktree)" }

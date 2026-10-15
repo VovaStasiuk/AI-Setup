@@ -186,7 +186,6 @@ After adding a skill:
 
 ## Answering user questions
 
-If the user asks "what workflow should I use?", recommend `/ai-workflow` or use `ai-workflow-router` directly.
 
 If the user asks to clarify terminology, naming, statuses, ownership, tenant/account scope, or domain language, use `domain-modeling`. Durable vocabulary updates should be proposed through `project-memory-curator` before writing `.ai/domain.md`.
 

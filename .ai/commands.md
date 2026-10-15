@@ -13,7 +13,6 @@ bash scripts/validate-repo.sh
 ## Workflow commands
 
 ```text
-/ai-workflow what should I use?
 /to-spec turn this conversation into a spec
 /to-tickets split this spec into implementation tickets
 ```

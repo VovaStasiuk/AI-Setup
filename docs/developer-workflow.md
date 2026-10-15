@@ -8,9 +8,6 @@ This setup is a workflow system for Claude, Codex, Gemini, or any subset of them
 engineering-baseline
   -> default engineering judgment
 
-developer-orchestrator
-  -> choose who/what should handle the task
-
 specialist skills
   -> planning, implementation, review, design, research, handoff
 
@@ -24,10 +21,8 @@ Project files override global skills.
 
 | Skill | Use When | Output |
 |---|---|---|
-| `ai-workflow-router` | User asks what workflow, skill, or command to use | Recommended route, exact command/prompt, fallback |
 | `ai-setup-manager` | Manage install, update, project init/configuration, audits, or source deletion questions | Safe install/project setup guidance |
 | `engineering-baseline` | Any non-trivial engineering task | Simple, scoped, evidence-driven behavior |
-| `developer-orchestrator` | More than one route/tool may apply | Route recommendation and fallback |
 | `grill-with-context` | Idea is vague or needs pressure-testing, especially inside a codebase | Decisions, shared language, candidate doc updates, open questions, next route |
 | `domain-modeling` | Terms, lifecycle/status language, ownership, scope, or naming is ambiguous | Shared vocabulary, overloaded terms, proposed `.ai/domain.md` update |
 | `feature-planner` | Feature/change needs a spec or plan | Decision-complete plan with tests |
@@ -41,20 +36,10 @@ Project files override global skills.
 | `human-ui-designer` | UI/design work or polish | Design contract + screenshot QA loop |
 | `pencil-design` | Pencil MCP or `.pen` files are involved | Editable mockup/design-to-code workflow |
 | `research-brief` | Need current/source-backed research | Recommendation, evidence, tradeoffs |
+| `ship` | Work looks finished and needs verifying, reviewing and closing | Evidence-based close-out: lint, build, tests, review, commit message, ticket note, state |
 | `handoff-protocol` | Work moves between agents/sessions | Handoff packet with context and exact ask |
-| `concise-communication` | User wants shorter replies | Compact communication without losing risk detail |
 
 ## Standard Flows
-
-### Choose A Workflow
-
-```text
-engineering-baseline
--> ai-workflow-router
--> recommended specialist skill or command
-```
-
-Use this when the user asks what to do next, which command to run, or which skill fits a request.
 
 ### Vague Feature Idea
 
@@ -74,7 +59,6 @@ engineering-baseline
 
 ```text
 engineering-baseline
--> developer-orchestrator
 -> feature-planner
 -> domain-modeling when terms, ownership, scope, or states affect the plan
 -> vertical slice plan for full-stack work
@@ -98,6 +82,7 @@ engineering-baseline
 -> focused reproduction/test
 -> tdd-seams for the regression seam
 -> fix
+-> browser console/network verification through chrome-devtools-mcp when available and relevant
 -> verification
 -> code-review-swe if risk warrants it
 ```
@@ -118,6 +103,7 @@ engineering-baseline
 -> pencil-design if Pencil/.pen is the selected route
 -> implementation
 -> screenshot + interaction + accessibility + motion verification
+-> chrome-devtools-mcp for deeper console, network, Lighthouse, or performance evidence when available
 ```
 
 The agent must not guess visual style when project design direction is unclear.
@@ -163,6 +149,7 @@ The handoff must include goal, constraints, relevant files, decisions, commands 
 | Raster image generation/editing | imagegen when available |
 | Pencil/.pen mockup or design-to-code | `human-ui-designer` + `pencil-design` |
 | Product UI direction | `human-ui-designer` + project `DESIGN.md` |
+| Browser console/network/performance debugging | `debugging-investigator` + Chrome DevTools MCP when installed |
 
 Unavailable routes should degrade gracefully.
 
@@ -200,7 +187,6 @@ Keep `AGENTS.md` and `CLAUDE.md` as indexes. Put details in `.ai/` files.
 - Put stack commands and styleguide details in project files.
 - Use `project-memory-curator` to propose, not silently write, reusable project knowledge.
 - Default communication is concise, direct, and no-fluff.
-- Use `concise-communication` only when the user asks for brevity or the answer is simple enough that compression will not hide risk.
 - Do not use Caveman-lite by default.
 - Do not compress away planning, review, security, debugging, verification, skipped work, or production-risk nuance.
 
@@ -246,7 +232,7 @@ The example is intentionally framework-neutral. Real projects should replace pla
 ## Example Prompts
 
 ```text
-/ai-workflow what should I use for this?
+/ai-setup what should I use for this?
 ```
 
 ```text

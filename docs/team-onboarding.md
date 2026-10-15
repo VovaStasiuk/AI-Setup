@@ -37,6 +37,8 @@ Choose this when both tools are part of the team workflow.
 
 All routes work without Gemini. Optional tools and subscriptions degrade gracefully.
 
+Chrome DevTools MCP is a separate opt-in capability for teammates who debug or verify web applications. Do not include it in the default team baseline unless the team has reviewed its browser-data access. See [optional browser tooling](browser-tooling.md).
+
 ## Choose Copy Or Link Mode
 
 | Mode | Choose It When | Consequence |

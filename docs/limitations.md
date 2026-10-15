@@ -17,6 +17,7 @@ AI Setup improves agent behavior, but it does not make AI reliably correct.
 - Link installs require keeping the source repo.
 - `--doctor` checks file presence and basic wiring; it does not prove every skill works perfectly.
 - `--audit-project` and `--standardize-project` are heuristic reports, not formal static analysis.
+- Chrome DevTools MCP status checks confirm only that an AI Setup-owned registration exists. They do not launch Chrome, verify browser compatibility, authenticate to an application, or prove console/network/performance behavior.
 
 ## Recommended Safety Practice
 

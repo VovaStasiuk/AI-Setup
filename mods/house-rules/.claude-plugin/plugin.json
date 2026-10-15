@@ -1,0 +1,5 @@
+{
+  "name": "house-rules",
+  "version": "0.2.0",
+  "description": "Opt-in: Blocks git commits/pushes/branch switches, worktrees and test-DB rebuilds unless your message asks for them; no file edits on a question turn"
+}

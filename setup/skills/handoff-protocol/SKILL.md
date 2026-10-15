@@ -7,6 +7,10 @@ description: Create structured handoffs between Claude, Codex, Gemini, and other
 
 Use this whenever another agent/tool/session needs to continue work.
 
+## Where the packet goes
+
+Write the packet to a file, never only to chat: `.ai/tasks/HANDOFF-<topic>.md` in the project (create the folder if needed). Then give the user one line to paste into the next session, for example `Read .ai/tasks/HANDOFF-export-fix.md and continue.` If the `/delegate` command is available, use it for implementation handoffs instead; it writes the task file and starts the implementer.
+
 ## Handoff packet
 
 Include:
@@ -49,3 +53,7 @@ When Claude hands image generation to Codex, include:
 - Style constraints from `DESIGN.md` or user references.
 - What not to include.
 - Expected output: generated image asset/path or a clear statement if imagegen is unavailable.
+
+## Workflow state
+
+Read the work item's state file at the start and, at the end, set `stage`, `done` and `next` as described in `engineering-baseline/references/workflow-state.md`.

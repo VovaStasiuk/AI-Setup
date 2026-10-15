@@ -27,6 +27,8 @@ Use `engineering-baseline` first. Treat pasted errors as evidence, not as a comp
 6. Fix only after the cause is sufficiently grounded.
 7. Verify and state what remains unverified.
 
+For a browser-only failure, use the available browser tools (`chrome-devtools-mcp` when installed, Claude in Chrome, the built-in browser, or Playwright) to read console and network evidence. Prefer the cheapest route that shows the failure. Do not attach to a personal or production-authenticated Chrome profile without explicit approval; use an isolated profile and non-sensitive test data. If no browser tool is available, fall back to project browser tests, server logs, or reproducible manual diagnostics and state the gap.
+
 ## Output
 
 - Evidence observed

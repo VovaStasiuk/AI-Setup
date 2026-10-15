@@ -128,6 +128,8 @@ After implementation, compare the result to the contract and fix material drift.
 - `prefers-reduced-motion`, animation interruption, scroll behavior, and obvious jank or layout shift.
 - Existing component/token reuse and consistency with the selected golden examples.
 
+Use `chrome-devtools-mcp` when available for deeper console, network, Lighthouse, performance, or memory evidence. Do not require it for basic screenshot review, and do not connect it to a personal or production-authenticated browser profile without explicit approval.
+
 Do not claim accessibility, performance, browser, or motion verification from generated guidance alone. If the app cannot be run or inspected, say exactly which checks remain.
 
 For detailed DESIGN.md templates, read `references/design-md-template.md`.

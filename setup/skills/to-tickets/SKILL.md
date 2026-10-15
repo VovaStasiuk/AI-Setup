@@ -64,7 +64,7 @@ For each ticket, include:
 - Verification commands or checks.
 - Test seam: public boundary to verify, or `Not applicable` with reason.
 - Risks or review focus.
-- Suggested route, usually `/implement` then `/review-code`.
+- Suggested route, usually `implementation-agent` then `code-review-swe`.
 
 ## Local Markdown output
 
@@ -108,7 +108,7 @@ Public boundary to verify, or `Not applicable` with reason.
 
 ## Suggested Route
 
-`/implement`, then `/review-code`.
+`implementation-agent`, then `code-review-swe`.
 ```
 
 ## Output
@@ -119,6 +119,10 @@ Return:
 2. Ordered ticket list with blockers.
 3. Frontier tickets that can start immediately.
 4. Blockers or questions.
-5. Suggested next command or prompt for the first frontier ticket.
+5. Suggested next step or prompt for the first frontier ticket.
 
 If the user asks for tracker-ready output, format each ticket as a standalone Markdown ticket body.
+
+## Workflow state
+
+Read the work item's state file at the start and, at the end, set `stage`, `done` and `next` as described in `engineering-baseline/references/workflow-state.md`.

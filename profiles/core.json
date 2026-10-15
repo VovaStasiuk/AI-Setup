@@ -3,9 +3,7 @@
   "description": "General Claude + Codex engineering workspace setup.",
   "skills": [
     "engineering-baseline",
-    "ai-workflow-router",
     "ai-setup-manager",
-    "developer-orchestrator",
     "grill-with-context",
     "domain-modeling",
     "feature-planner",
@@ -20,7 +18,9 @@
     "pencil-design",
     "research-brief",
     "handoff-protocol",
-    "concise-communication"
+    "plain-talk",
+    "ticket",
+    "ship"
   ],
   "projectKit": "setup/project-kit",
   "globalFiles": {

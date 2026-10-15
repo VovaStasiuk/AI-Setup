@@ -43,13 +43,13 @@ Initialize that SaaS project after the global install:
 
 Use `/ai-setup-onboard-team` for an approval-gated command plan, or see the [team onboarding guide](docs/team-onboarding.md) for tool, profile, and copy-vs-link choices.
 
+Already installed and a new version was announced? See [Refresh your setup](docs/refresh.md).
+
 ## What It Installs
 
 - Global skills:
-  - `ai-workflow-router`
   - `ai-setup-manager`
   - `engineering-baseline`
-  - `developer-orchestrator`
   - `grill-with-context`
   - `domain-modeling`
   - `feature-planner`
@@ -64,9 +64,10 @@ Use `/ai-setup-onboard-team` for an approval-gated command plan, or see the [tea
   - `pencil-design`
   - `research-brief`
   - `handoff-protocol`
-  - `concise-communication`
+  - `plain-talk`
+  - `ticket`
+  - `ship`
 - Optional Claude command wrappers:
-  - `/ai-workflow`
   - `/ai-setup`
   - `/ai-setup-onboard-team`
   - `/ai-setup-init`
@@ -90,6 +91,7 @@ Use `/ai-setup-onboard-team` for an approval-gated command plan, or see the [tea
 - A project starter kit with `AGENTS.md`, `CLAUDE.md`, `.ai/agent-workflow.md`, `.ai/issue-tracker.md`, `.ai/domain.md`, `.ai/DESIGN.md`, `.ai/commands.md`, starter Django/React styleguides, specs, tickets, and decisions.
 - Optional profiles for `core`, `saas`, `enterprise`, and `mobile` project starts.
 - Design workflow support for theme discovery, palette/typography direction, `DESIGN.md`, Pencil/.pen workflows, and screenshot QA.
+- Optional, separately approved Chrome DevTools MCP support for console, network, Lighthouse, performance, and memory diagnostics.
 
 ## Install
 
@@ -131,6 +133,15 @@ Use a project-type profile:
 ./install.sh --dry-run --profile saas --all
 ./install.sh --profile saas --all
 ```
+
+Optionally add Chrome DevTools MCP to one or both clients without changing the selected project profile:
+
+```bash
+./install.sh --dry-run --chrome-devtools-mcp codex
+./install.sh --chrome-devtools-mcp codex
+```
+
+Use `claude` or `all` instead of `codex` for the other targets. This capability is never installed by `--all`; see the [browser tooling guide](docs/browser-tooling.md) for requirements, privacy boundaries, and removal.
 
 Copy mode is the default, so the cloned/downloaded repo can be deleted after install.
 
@@ -224,6 +235,7 @@ The setup degrades gracefully:
 - Claude + Codex: Claude/Superpowers for large planning, Codex for review/rescue.
 - Gemini available: use for long-context, PDFs, audio/video, and huge scans.
 - imagegen available: use for raster images, mockups, and image edits.
+- Chrome DevTools MCP available: use for evidence-based browser console, network, performance, memory, and UI verification when basic browser control is insufficient.
 
 No subscription or CLI is required for every route.
 
@@ -297,6 +309,7 @@ If you want Claude, Codex, or another AI coding assistant to help install or cus
 - `AGENTS.md`
 - `docs/ai-assistant-guide.md`
 - `docs/developer-workflow.md`
+- `docs/browser-tooling.md`
 - `docs/team-onboarding.md`
 - `docs/team-onboarding-usability-test.md`
 - `docs/limitations.md`

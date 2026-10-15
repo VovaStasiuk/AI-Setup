@@ -107,3 +107,7 @@ Use this shape:
 4. Open questions or assumptions
 5. Test gaps / residual risk
 6. Short change summary only if useful
+
+## Workflow state
+
+Read the work item's state file at the start and, at the end, set `stage`, `done` and `next` as described in `engineering-baseline/references/workflow-state.md`.

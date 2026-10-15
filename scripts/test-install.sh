@@ -30,6 +30,29 @@ assert_absent() {
   fi
 }
 
+write_mcp_cli_stub() {
+  local path="$1"
+  mkdir -p "$(dirname "$path")"
+  # shellcheck disable=SC2016 # The generated stub expands these variables at runtime.
+  printf '%s\n' \
+    '#!/usr/bin/env bash' \
+    'set -euo pipefail' \
+    'tool_name="$(basename "$0")"' \
+    'printf "%s" "$tool_name" >> "$MCP_CALL_LOG"' \
+    'printf " %q" "$@" >> "$MCP_CALL_LOG"' \
+    'printf "\n" >> "$MCP_CALL_LOG"' \
+    'if [[ "${1:-}" == "mcp" && "${2:-}" == "get" ]]; then' \
+    '  [[ -f "$MCP_STATE_DIR/$tool_name" ]]' \
+    '  exit' \
+    'fi' \
+    'if [[ "${1:-}" == "mcp" && "${2:-}" == "add" ]]; then' \
+    '  mkdir -p "$MCP_STATE_DIR"' \
+    '  : > "$MCP_STATE_DIR/$tool_name"' \
+    'fi' \
+    > "$path"
+  chmod +x "$path"
+}
+
 write_retired_skill_fixture() {
   local path="$1"
   mkdir -p "$path"
@@ -175,6 +198,57 @@ bash "$ROOT_DIR/scripts/validate-repo.sh"
 
 echo "test: list profiles"
 "$ROOT_DIR/install.sh" --list-profiles
+
+echo "test: Chrome DevTools MCP opt-in contract"
+MCP_STUB_BIN="$TMP_ROOT/mcp-bin"
+MCP_CALL_LOG="$TMP_ROOT/mcp-calls.log"
+MCP_STATE_DIR="$TMP_ROOT/mcp-state"
+MCP_HOME="$TMP_ROOT/mcp-home"
+export MCP_CALL_LOG MCP_STATE_DIR
+mkdir -p "$MCP_HOME"
+write_mcp_cli_stub "$MCP_STUB_BIN/claude"
+write_mcp_cli_stub "$MCP_STUB_BIN/codex"
+write_mcp_cli_stub "$MCP_STUB_BIN/npx"
+
+"$ROOT_DIR/install.sh" --help | grep -Fq -- '--chrome-devtools-mcp' || fail_test "installer help missing Chrome DevTools MCP option"
+if "$ROOT_DIR/install.sh" --dry-run --chrome-devtools-mcp invalid; then
+  fail_test "invalid Chrome DevTools MCP target unexpectedly passed"
+fi
+
+MCP_DRY_RUN_LOG="$TMP_ROOT/mcp-dry-run.log"
+PATH="$MCP_STUB_BIN:$PATH" HOME="$MCP_HOME" "$ROOT_DIR/install.sh" --dry-run --chrome-devtools-mcp all > "$MCP_DRY_RUN_LOG"
+grep -Fq 'chrome-devtools-mcp@1.6.0' "$MCP_DRY_RUN_LOG" || fail_test "Chrome DevTools MCP version is not pinned"
+grep -Fq -- '--isolated' "$MCP_DRY_RUN_LOG" || fail_test "Chrome DevTools MCP dry-run missing isolated mode"
+grep -Fq -- '--no-usage-statistics' "$MCP_DRY_RUN_LOG" || fail_test "Chrome DevTools MCP dry-run missing telemetry opt-out"
+grep -Fq -- '--no-performance-crux' "$MCP_DRY_RUN_LOG" || fail_test "Chrome DevTools MCP dry-run missing CrUX opt-out"
+grep -Fq 'claude mcp add' "$MCP_DRY_RUN_LOG" || fail_test "Chrome DevTools MCP dry-run missing Claude command"
+grep -Fq 'codex mcp add' "$MCP_DRY_RUN_LOG" || fail_test "Chrome DevTools MCP dry-run missing Codex command"
+assert_absent "$MCP_HOME/.agents/ai-setup/capabilities/chrome-devtools-mcp/claude.json"
+assert_absent "$MCP_HOME/.agents/ai-setup/capabilities/chrome-devtools-mcp/codex.json"
+
+HOME="$MCP_HOME" "$ROOT_DIR/install.sh" --all --no-global-files
+PATH="$MCP_STUB_BIN:$PATH" HOME="$MCP_HOME" "$ROOT_DIR/install.sh" --chrome-devtools-mcp all
+assert_file "$MCP_HOME/.agents/ai-setup/capabilities/chrome-devtools-mcp/claude.json"
+assert_file "$MCP_HOME/.agents/ai-setup/capabilities/chrome-devtools-mcp/codex.json"
+grep -Fq 'claude mcp add' "$MCP_CALL_LOG" || fail_test "Claude MCP registration was not invoked"
+grep -Fq 'codex mcp add' "$MCP_CALL_LOG" || fail_test "Codex MCP registration was not invoked"
+MCP_STATUS_LOG="$TMP_ROOT/mcp-status.log"
+PATH="$MCP_STUB_BIN:$PATH" HOME="$MCP_HOME" "$ROOT_DIR/install.sh" --status --no-global-files > "$MCP_STATUS_LOG"
+grep -Fq 'match: claude capability chrome-devtools-mcp' "$MCP_STATUS_LOG" || fail_test "status missing Claude Chrome DevTools capability"
+grep -Fq 'match: codex capability chrome-devtools-mcp' "$MCP_STATUS_LOG" || fail_test "status missing Codex Chrome DevTools capability"
+
+echo "test: Chrome DevTools MCP preserves an existing registration"
+MCP_EXISTING_HOME="$TMP_ROOT/mcp-existing-home"
+mkdir -p "$MCP_EXISTING_HOME" "$MCP_STATE_DIR"
+: > "$MCP_STATE_DIR/codex"
+: > "$MCP_CALL_LOG"
+MCP_EXISTING_LOG="$TMP_ROOT/mcp-existing.log"
+PATH="$MCP_STUB_BIN:$PATH" HOME="$MCP_EXISTING_HOME" "$ROOT_DIR/install.sh" --chrome-devtools-mcp codex > "$MCP_EXISTING_LOG"
+grep -Fq 'preserve existing MCP server: codex -> chrome-devtools' "$MCP_EXISTING_LOG" || fail_test "existing Codex MCP server was not preserved"
+if grep -Fq 'codex mcp add' "$MCP_CALL_LOG"; then
+  fail_test "existing Codex MCP server was overwritten"
+fi
+assert_absent "$MCP_EXISTING_HOME/.agents/ai-setup/capabilities/chrome-devtools-mcp/codex.json"
 
 echo "test: isolated install route matrix"
 run_install_route "claude-core-copy" "core" "--claude" "--copy" "claude" 1 0

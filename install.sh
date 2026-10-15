@@ -21,7 +21,16 @@ RUN_UPDATE=0
 RUN_UNINSTALL=0
 RUN_LIST_PROFILES=0
 RESTORE_BACKUP=""
-VERSION="0.1.0"
+CHROME_DEVTOOLS_MCP_TARGET=""
+CHROME_DEVTOOLS_MCP_VERSION="1.6.0"
+CHROME_DEVTOOLS_MCP_NAME="chrome-devtools"
+VERSION="0.2.0"
+MODS_SPEC=""
+DO_MODS=0
+MODS_DIR="$HOME/.claude/ai-setup-mods"
+MODS_DEFAULT="cheap-lane,relay,cockpit,file-guard"
+BLOCK_BEGIN="<!-- ai-setup:begin -->"
+BLOCK_END="<!-- ai-setup:end -->"
 
 usage() {
   cat <<'USAGE'
@@ -32,10 +41,14 @@ Usage:
   ./install.sh --claude
   ./install.sh --codex
   ./install.sh --profile saas --all
+  ./install.sh --chrome-devtools-mcp codex
+  ./install.sh --chrome-devtools-mcp all
   ./install.sh --init-project /path/to/project
   ./install.sh --profile enterprise --init-project /path/to/project
   ./install.sh --audit-project /path/to/project
   ./install.sh --standardize-project /path/to/project
+  ./install.sh --claude --mods
+  ./install.sh --claude --mods house-rules,cockpit
   ./install.sh --doctor
   ./install.sh --status
   ./install.sh --list-profiles
@@ -49,6 +62,9 @@ Options:
   --codex               Install shared skills for Codex
   --profile NAME        Use an install/project profile: core, saas, enterprise, mobile
   --list-profiles       List available profiles
+  --chrome-devtools-mcp TARGET
+                        Add the optional Chrome DevTools MCP server to claude, codex, or all
+  --mods [LIST]         Install Claude mods (default: cheap-lane,relay,cockpit,file-guard; all adds house-rules)
   --no-global-files     Do not update ~/.claude/CLAUDE.md or ~/.codex/AGENTS.md
   --no-commands         Do not install Claude command wrappers
   --copy                Copy skills/templates (default; source repo can be deleted)
@@ -250,6 +266,152 @@ run() {
   fi
 }
 
+chrome_devtools_marker_path() {
+  local tool="$1"
+  printf '%s/.agents/ai-setup/capabilities/chrome-devtools-mcp/%s.json\n' "$HOME" "$tool"
+}
+
+mcp_server_exists() {
+  local tool="$1"
+
+  command -v "$tool" >/dev/null 2>&1 || return 1
+  "$tool" mcp get "$CHROME_DEVTOOLS_MCP_NAME" >/dev/null 2>&1
+}
+
+write_chrome_devtools_marker() {
+  local tool="$1"
+  local marker
+  marker="$(chrome_devtools_marker_path "$tool")"
+
+  run mkdir -p "$(dirname "$marker")"
+  if [[ "$DRY_RUN" == "1" ]]; then
+    log "[dry-run] write capability marker: $marker"
+    return
+  fi
+
+  cat > "$marker" <<JSON
+{
+  "name": "$CHROME_DEVTOOLS_MCP_NAME",
+  "tool": "$tool",
+  "package": "chrome-devtools-mcp@$CHROME_DEVTOOLS_MCP_VERSION",
+  "installed_by": "AI Setup",
+  "browser_policy": "isolated",
+  "usage_statistics": false,
+  "performance_crux": false
+}
+JSON
+}
+
+install_chrome_devtools_for_tool() {
+  local tool="$1"
+  local package="chrome-devtools-mcp@$CHROME_DEVTOOLS_MCP_VERSION"
+  local server_args=(
+    npx
+    -y
+    "$package"
+    --isolated
+    --no-usage-statistics
+    --no-performance-crux
+  )
+  local command_args=()
+
+  if mcp_server_exists "$tool"; then
+    log "preserve existing MCP server: $tool -> $CHROME_DEVTOOLS_MCP_NAME"
+    log "AI Setup did not change or claim ownership of this registration."
+    return 0
+  fi
+
+  if [[ "$DRY_RUN" != "1" ]]; then
+    if ! command -v "$tool" >/dev/null 2>&1; then
+      log "cannot add Chrome DevTools MCP: $tool command is unavailable"
+      return 1
+    fi
+    if ! command -v npx >/dev/null 2>&1; then
+      log "cannot add Chrome DevTools MCP: npx is unavailable"
+      return 1
+    fi
+  fi
+
+  case "$tool" in
+    claude)
+      command_args=(
+        claude mcp add
+        --scope user
+        -e CHROME_DEVTOOLS_MCP_NO_UPDATE_CHECKS=1
+        "$CHROME_DEVTOOLS_MCP_NAME"
+        --
+        "${server_args[@]}"
+      )
+      ;;
+    codex)
+      command_args=(
+        codex mcp add
+        --env CHROME_DEVTOOLS_MCP_NO_UPDATE_CHECKS=1
+        "$CHROME_DEVTOOLS_MCP_NAME"
+        --
+        "${server_args[@]}"
+      )
+      ;;
+    *)
+      log "unsupported Chrome DevTools MCP target: $tool"
+      return 1
+      ;;
+  esac
+
+  log "add optional Chrome DevTools MCP to $tool"
+  run "${command_args[@]}"
+  write_chrome_devtools_marker "$tool"
+}
+
+install_chrome_devtools_mcp() {
+  local target="$1"
+
+  log "Chrome DevTools MCP package: chrome-devtools-mcp@$CHROME_DEVTOOLS_MCP_VERSION"
+  log "browser policy: isolated profile; usage statistics and performance CrUX disabled"
+
+  case "$target" in
+    claude)
+      install_chrome_devtools_for_tool claude
+      ;;
+    codex)
+      install_chrome_devtools_for_tool codex
+      ;;
+    all)
+      install_chrome_devtools_for_tool claude
+      install_chrome_devtools_for_tool codex
+      ;;
+  esac
+}
+
+status_chrome_devtools_mcp() {
+  local marker_root="$HOME/.agents/ai-setup/capabilities/chrome-devtools-mcp"
+  local tool
+  local marker
+  local found=0
+
+  [[ -d "$marker_root" ]] || return 0
+
+  for tool in claude codex; do
+    marker="$(chrome_devtools_marker_path "$tool")"
+    [[ -f "$marker" ]] || continue
+    if [[ "$found" == "0" ]]; then
+      log ""
+      log "Optional browser capabilities"
+      found=1
+    fi
+    if ! command -v "$tool" >/dev/null 2>&1; then
+      log "missing: $tool capability chrome-devtools-mcp -> $tool command unavailable"
+      STATUS_MISSING=$((STATUS_MISSING + 1))
+    elif mcp_server_exists "$tool"; then
+      log "match: $tool capability chrome-devtools-mcp"
+      STATUS_MATCHED=$((STATUS_MATCHED + 1))
+    else
+      log "missing: $tool capability chrome-devtools-mcp -> MCP registration not found"
+      STATUS_MISSING=$((STATUS_MISSING + 1))
+    fi
+  done
+}
+
 copy_skill_tree() {
   local skill="$1"
   local dst_root="$2"
@@ -393,6 +555,148 @@ backup_global_file() {
     run mkdir -p "$backup_dir"
     run cp "$path" "$backup_dir/$(basename "$path")"
     log "backup: $path -> $backup_dir/"
+  fi
+}
+
+install_global_file() {
+  local src="$1"
+  local dst="$2"
+  local block tmp first
+  backup_global_file "$dst"
+  if [[ "$DRY_RUN" == "1" ]]; then
+    log "[dry-run] update AI Setup block in $dst (content outside the block is kept)"
+    return 0
+  fi
+  mkdir -p "$(dirname "$dst")"
+  block="$(mktemp)"
+  tmp="$(mktemp)"
+  { printf '%s\n' "$BLOCK_BEGIN"; cat "$src"; printf '\n%s\n' "$BLOCK_END"; } > "$block"
+  if [[ ! -f "$dst" ]]; then
+    cp "$block" "$dst"
+  elif grep -Fq "$BLOCK_BEGIN" "$dst"; then
+    awk -v b="$BLOCK_BEGIN" -v e="$BLOCK_END" -v f="$block" '
+      BEGIN { while ((getline l < f) > 0) blk = blk l "\n" }
+      $0 == b { printf "%s", blk; skip = 1; next }
+      $0 == e { skip = 0; next }
+      !skip { print }' "$dst" > "$tmp"
+    cp "$tmp" "$dst"
+  else
+    first="$(head -1 "$dst")"
+    if [[ "$first" == "# Global Claude Instructions" || "$first" == "# Global Agent Instructions" ]]; then
+      cp "$block" "$dst"
+    else
+      { cat "$block"; printf '\n## Personal notes (kept from your previous file)\n\n'; cat "$dst"; } > "$tmp"
+      cp "$tmp" "$dst"
+    fi
+  fi
+  rm -f "$block" "$tmp"
+  log "updated: $dst"
+}
+
+mod_names() {
+  for d in "$ROOT_DIR"/mods/*/; do
+    [[ -d "$d.claude-plugin" ]] && basename "$d"
+  done
+}
+
+selected_mods() {
+  case "$MODS_SPEC" in
+    ""|default) printf '%s\n' "${MODS_DEFAULT//,/ }" | tr ' ' '\n' ;;
+    all) mod_names ;;
+    *) printf '%s\n' "${MODS_SPEC//,/ }" | tr ' ' '\n' ;;
+  esac
+}
+
+mods_settings() {
+  local action="$1"
+  local mods="$2"
+  local settings="$HOME/.claude/settings.json"
+  command -v python3 >/dev/null 2>&1 || { log "skip mods settings: python3 not found"; return 0; }
+  if [[ "$DRY_RUN" == "1" ]]; then
+    log "[dry-run] $action mods in $settings: $mods"
+    return 0
+  fi
+  mkdir -p "$HOME/.claude"
+  [[ -f "$settings" ]] && cp "$settings" "$settings.bak-ai-setup"
+  python3 -I - "$settings" "$action" "$MODS_DIR" "$mods" <<'PY'
+import json, os, sys
+path, action, mods_dir, mods = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4].split()
+data = json.load(open(path)) if os.path.exists(path) else {}
+mk = data.setdefault('extraKnownMarketplaces', {})
+en = data.setdefault('enabledPlugins', {})
+if action == 'enable':
+    mk['ai-setup-mods'] = {'source': {'source': 'directory', 'path': mods_dir}}
+    for m in mods:
+        en[m + '@ai-setup-mods'] = True
+else:
+    mk.pop('ai-setup-mods', None)
+    for k in [k for k in en if k.endswith('@ai-setup-mods')]:
+        en.pop(k)
+json.dump(data, open(path, 'w'), indent=2, ensure_ascii=False)
+open(path, 'a').write('\n')
+PY
+  log "settings: $action mods ($mods)"
+}
+
+install_mods() {
+  local mods wanted m
+  [[ -d "$ROOT_DIR/mods" ]] || { log "skip mods: no mods folder in this repo"; return 0; }
+  wanted="$(selected_mods | tr '\n' ' ')"
+  mods=""
+  for m in $wanted; do
+    if [[ -d "$ROOT_DIR/mods/$m/.claude-plugin" ]]; then
+      mods="$mods $m"
+    else
+      log "skip unknown mod: $m"
+    fi
+  done
+  mods="${mods# }"
+  [[ -n "$mods" ]] || return 0
+  run mkdir -p "$MODS_DIR"
+  run rm -rf "$MODS_DIR/.claude-plugin"
+  run cp -R "$ROOT_DIR/mods/.claude-plugin" "$MODS_DIR/.claude-plugin"
+  for m in $(mod_names); do
+    run rm -rf "$MODS_DIR/$m"
+    run cp -R "$ROOT_DIR/mods/$m" "$MODS_DIR/$m"
+  done
+  if [[ -d "$ROOT_DIR/setup/claude-agents" ]]; then
+    run mkdir -p "$HOME/.claude/agents"
+    copy_tree_contents "$ROOT_DIR/setup/claude-agents" "$HOME/.claude/agents"
+  fi
+  if [[ "${1:-}" == "files-only" ]]; then
+    log "mods refreshed (enabled mods unchanged; restart Claude Code to load them)"
+    return 0
+  fi
+  mods_settings enable "$mods"
+  log "mods enabled: $mods (restart Claude Code to load them)"
+}
+
+retired_installed_skill() {
+  local skill="$1"
+  local path="$2"
+  [[ -f "$path/SKILL.md" ]] && grep -q "^name: $skill\$" "$path/SKILL.md"
+}
+
+cleanup_extra_retired() {
+  local skill root path backup_dir
+  backup_dir="$HOME/.agents/backups/$(date +%Y%m%d-%H%M%S)-ai-setup-retired"
+  for skill in concise-communication ai-workflow-router developer-orchestrator; do
+    for root in "$HOME/.claude/skills" "$HOME/.codex/skills" "$HOME/.agents/skills"; do
+      path="$root/$skill"
+      [[ -d "$path" && ! -L "$path" ]] || { [[ -L "$path" ]] && run rm -f "$path"; continue; }
+      if retired_installed_skill "$skill" "$path"; then
+        run mkdir -p "$backup_dir"
+        run cp -R "$path" "$backup_dir/$(basename "$root")-$skill"
+        log "retire AI Setup skill $skill: $path (copy in $backup_dir)"
+        run rm -rf "$path"
+      else
+        log "preserve unrecognized retired skill path: $path"
+      fi
+    done
+  done
+  if [[ -f "$HOME/.claude/commands/ai-workflow.md" ]] && grep -q "ai-workflow-router" "$HOME/.claude/commands/ai-workflow.md"; then
+    log "retire AI Setup command ai-workflow.md"
+    run rm -f "$HOME/.claude/commands/ai-workflow.md"
   fi
 }
 
@@ -732,6 +1036,8 @@ install_status() {
     fi
   fi
 
+  status_chrome_devtools_mcp
+
   log ""
   log "status summary: matched $STATUS_MATCHED, missing $STATUS_MISSING, stale $STATUS_STALE, extra $STATUS_EXTRA, optional-missing $STATUS_SKIPPED"
   if [[ "$STATUS_MISSING" -gt 0 || "$STATUS_STALE" -gt 0 || "$STATUS_EXTRA" -gt 0 ]]; then
@@ -744,14 +1050,13 @@ install_status() {
 
 install_codex() {
   local skill
+  cleanup_extra_retired
   install_shared_skills
   while IFS= read -r skill; do
     link_or_copy_skill "$skill" "$HOME/.codex/skills"
   done < <(profile_skill_names)
   if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
-    backup_global_file "$HOME/.codex/AGENTS.md"
-    run mkdir -p "$HOME/.codex"
-    run cp "$ROOT_DIR/setup/global-files/AGENTS.md" "$HOME/.codex/AGENTS.md"
+    install_global_file "$ROOT_DIR/setup/global-files/AGENTS.md" "$HOME/.codex/AGENTS.md"
   fi
 }
 
@@ -762,9 +1067,7 @@ install_claude() {
     link_or_copy_skill "$skill" "$HOME/.claude/skills"
   done < <(profile_skill_names)
   if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
-    backup_global_file "$HOME/.claude/CLAUDE.md"
-    run mkdir -p "$HOME/.claude"
-    run cp "$ROOT_DIR/setup/global-files/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+    install_global_file "$ROOT_DIR/setup/global-files/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
   fi
   if [[ "$DO_COMMANDS" == "1" ]]; then
     run mkdir -p "$HOME/.claude/commands"
@@ -815,6 +1118,7 @@ doctor() {
   check_command claude
   check_command codex
   check_command gemini
+  check_command npx
 
   if ! install_status; then
     failures=$((failures + 1))
@@ -1003,6 +1307,7 @@ update_install() {
 
   log "updating AI Setup"
   cleanup_retired_install
+  cleanup_extra_retired
   refresh_shared_skills
 
   if [[ "$DO_CODEX" == "1" ]]; then
@@ -1010,9 +1315,7 @@ update_install() {
       refresh_tool_skill "$skill" "$HOME/.codex/skills"
     done < <(profile_skill_names)
     if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
-      backup_global_file "$HOME/.codex/AGENTS.md"
-      run mkdir -p "$HOME/.codex"
-      run cp "$ROOT_DIR/setup/global-files/AGENTS.md" "$HOME/.codex/AGENTS.md"
+      install_global_file "$ROOT_DIR/setup/global-files/AGENTS.md" "$HOME/.codex/AGENTS.md"
     fi
     tools="${tools}codex"
   fi
@@ -1022,15 +1325,18 @@ update_install() {
       refresh_tool_skill "$skill" "$HOME/.claude/skills"
     done < <(profile_skill_names)
     if [[ "$DO_GLOBAL_FILES" == "1" ]]; then
-      backup_global_file "$HOME/.claude/CLAUDE.md"
-      run mkdir -p "$HOME/.claude"
-      run cp "$ROOT_DIR/setup/global-files/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+      install_global_file "$ROOT_DIR/setup/global-files/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
     fi
     if [[ "$DO_COMMANDS" == "1" ]]; then
       run mkdir -p "$HOME/.claude/commands"
       copy_tree_contents "$ROOT_DIR/setup/claude-commands" "$HOME/.claude/commands"
     fi
     tools="${tools:+$tools,}claude"
+  fi
+
+  if [[ "$DO_CLAUDE" == "1" && -d "$MODS_DIR" ]]; then
+    MODS_SPEC="all"
+    install_mods files-only
   fi
 
   write_install_metadata "$tools"
@@ -1059,8 +1365,16 @@ uninstall_setup() {
     run rm -f "$HOME/.claude/CLAUDE.md"
   fi
 
+  if [[ -d "$MODS_DIR" ]]; then
+    mods_settings remove ""
+    run rm -rf "$MODS_DIR"
+  fi
   run rm -rf "$HOME/.agents/templates/project-kit"
   run rm -f "$HOME/.agents/ai-setup/install.json"
+  if [[ -d "$HOME/.agents/ai-setup/capabilities/chrome-devtools-mcp" ]]; then
+    log "preserve external Chrome DevTools MCP registrations and ownership markers"
+    log "remove them explicitly with 'claude mcp remove --scope user chrome-devtools' and/or 'codex mcp remove chrome-devtools'"
+  fi
   log "uninstall complete"
   log "Backups, if created, are under $HOME/.agents/backups/"
 }
@@ -1120,6 +1434,25 @@ while [[ $# -gt 0 ]]; do
       ;;
     --list-profiles)
       RUN_LIST_PROFILES=1
+      ;;
+    --chrome-devtools-mcp)
+      shift
+      CHROME_DEVTOOLS_MCP_TARGET="${1:-}"
+      case "$CHROME_DEVTOOLS_MCP_TARGET" in
+        claude|codex|all) ;;
+        *)
+          log "--chrome-devtools-mcp requires one of: claude, codex, all"
+          exit 1
+          ;;
+      esac
+      ;;
+    --mods)
+      DO_CLAUDE=1
+      DO_MODS=1
+      if [[ $# -gt 1 && "$2" != --* ]]; then
+        shift
+        MODS_SPEC="$1"
+      fi
       ;;
     --no-global-files)
       DO_GLOBAL_FILES=0
@@ -1203,7 +1536,7 @@ fi
 
 profile_chain "$PROFILE_NAME" >/dev/null
 
-if [[ "$DO_CLAUDE" == "0" && "$DO_CODEX" == "0" && -z "$INIT_PROJECT" && -z "$AUDIT_PROJECT" && -z "$STANDARDIZE_PROJECT" && "$RUN_DOCTOR" == "0" && "$RUN_STATUS" == "0" && "$RUN_UPDATE" == "0" && "$RUN_UNINSTALL" == "0" && -z "$RESTORE_BACKUP" ]]; then
+if [[ "$DO_CLAUDE" == "0" && "$DO_CODEX" == "0" && -z "$INIT_PROJECT" && -z "$AUDIT_PROJECT" && -z "$STANDARDIZE_PROJECT" && "$RUN_DOCTOR" == "0" && "$RUN_STATUS" == "0" && "$RUN_UPDATE" == "0" && "$RUN_UNINSTALL" == "0" && -z "$RESTORE_BACKUP" && -z "$CHROME_DEVTOOLS_MCP_TARGET" ]]; then
   usage
   exit 0
 fi
@@ -1234,12 +1567,20 @@ if [[ "$RUN_STATUS" == "1" ]]; then
   install_status
 fi
 
+if [[ -n "$CHROME_DEVTOOLS_MCP_TARGET" ]]; then
+  install_chrome_devtools_mcp "$CHROME_DEVTOOLS_MCP_TARGET"
+fi
+
 if [[ "$DO_CODEX" == "1" ]]; then
   install_codex
 fi
 
 if [[ "$DO_CLAUDE" == "1" ]]; then
   install_claude
+fi
+
+if [[ "$DO_MODS" == "1" ]]; then
+  install_mods
 fi
 
 if [[ "$DO_CODEX" == "1" || "$DO_CLAUDE" == "1" ]]; then

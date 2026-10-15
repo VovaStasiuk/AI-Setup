@@ -5,7 +5,7 @@ description: Implement approved plans or direct coding tasks end to end. Choose 
 
 # Implementation Agent
 
-Use `engineering-baseline` first. Use `developer-orchestrator` when another model/tool may be better.
+Use `engineering-baseline` first.
 
 ## Flow
 
@@ -13,22 +13,27 @@ Use `engineering-baseline` first. Use `developer-orchestrator` when another mode
 2. Inspect project instructions, commands, existing code, and tests.
 3. If the work is too broad for one focused pass, route to `to-spec` or `to-tickets` before editing.
 4. For non-trivial executable behavior, use `tdd-seams`: identify the public seam, write or name the focused failing check, then implement one vertical slice.
-5. Recommend an execution route and ask when more than one major route is available.
+5. Pick the execution route yourself; ask only before handing the work to another model or tool.
 6. Implement in small scoped changes.
 7. Run the narrowest meaningful verification, then broader checks if risk warrants it.
 8. Summarize behavior changed, files touched, checks run, and remaining risk.
 9. If implementation reveals a reusable project pattern or command gotcha, propose a `project-memory-curator` update with evidence.
 
+After frontend or browser-facing changes, check the result with the browser tools that are available (`chrome-devtools-mcp` when installed, Claude in Chrome, the built-in browser, or Playwright), including console and network output when that evidence matters. Use existing browser tests for simpler checks. Never attach to a personal or production-authenticated browser profile without explicit approval.
+
 ## Code comment discipline
 
-- Prefer clear names, small functions, types, and tests over explanatory comments.
-- Use a code comment only when the code cannot clearly express a stable, non-obvious reason, invariant, external constraint, or safety requirement.
-- Keep implementation comments to one short sentence when possible and no more than two short lines in normal cases.
+- Default to no new comment. Prefer clear names, a small helper, a type, an assertion, or a regression test.
+- Make the final code read as if the correct implementation was written first.
+- When correcting your own implementation, delete comments that explain the failed attempt, the correction, or why the previous version was wrong.
 - Do not leave investigation history, bug narratives, before/after explanations, or change logs in code comments.
-- Do not restate the code or document how the agent discovered the fix. Put that context in the final summary, issue, spec, or decision record.
+- Describe only the current invariant. Do not write retrospective phrases such as "previously," "now," "this fixes," or "we tried."
+- Never make a comment block longer than the code it explains. A single statement gets at most one short comment line.
+- Use a code comment only when the code cannot clearly express a stable, non-obvious reason, invariant, external constraint, or safety requirement.
+- Put defect history and discovery details in a regression-test name, final summary, issue, spec, or decision record—not beside the implementation.
 - Before finishing, review every comment added or substantially changed and remove or shorten anything that does not protect a future maintainer from a likely misunderstanding or unsafe edit.
 
-For example, prefer `# Let the database enforce expression-based uniqueness; field validation still runs.` over a multi-line account of why the failing path was discovered. Keep longer inline documentation only when a public API, project convention, legal requirement, or safety-critical constraint genuinely requires it.
+Treat comments written while debugging as temporary. If a necessary explanation cannot fit within the size limit, improve the code structure or link to a durable issue or decision instead of embedding the narrative.
 
 Do not say tests/build/lint pass unless they were run and passed. If checks were skipped or failed, report that directly.
 If test-first work was skipped, state why and what verification replaced it.
@@ -73,3 +78,7 @@ For features spanning backend and frontend, implement vertical slices by default
 8. Ask for direction check when the product behavior or UI could drift.
 
 Do not build all APIs first unless the plan documents why a horizontal backend-first phase is necessary.
+
+## Workflow state
+
+Read the work item's state file at the start and, at the end, set `stage`, `done` and `next` as described in `engineering-baseline/references/workflow-state.md`.

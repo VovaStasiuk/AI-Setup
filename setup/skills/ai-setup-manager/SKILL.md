@@ -30,6 +30,7 @@ If no source repo is found but installed skills exist, explain that project init
 - For project standardization: run `./install.sh --standardize-project <path>`, inspect the reported surfaces, then propose a step-by-step migration before editing.
 - For "can I delete the repo?": read install metadata. Copy mode means yes; link mode means no.
 - For customization: edit the source repo files, then reinstall/update.
+- For optional browser diagnostics: run `./install.sh --dry-run --chrome-devtools-mcp <claude|codex|all>`, explain the isolated/telemetry-disabled registration, then ask before applying the matching real command. Preserve existing `chrome-devtools` MCP registrations.
 
 ## Configure project workflow
 

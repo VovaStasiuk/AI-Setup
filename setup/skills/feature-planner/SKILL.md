@@ -1,11 +1,11 @@
 ---
 name: feature-planner
-description: Plan new features, large changes, refactors, migrations, and product workflows. Ask whether to use Claude Superpowers planning or the custom lightweight planner when both could apply. Produce decision-complete specs/plans with success criteria, assumptions, risks, implementation shape, and tests.
+description: Plan new features, large changes, refactors, migrations, and product workflows. Picks Claude Superpowers planning or the custom lightweight planner without asking, unless the user wants to choose. Produce decision-complete specs/plans with success criteria, assumptions, risks, implementation shape, and tests.
 ---
 
 # Feature Planner
 
-Use `engineering-baseline` first. If route selection is unclear, use `developer-orchestrator`.
+Use `engineering-baseline` first.
 
 Challenge weak ideas before turning them into plans. Call out overengineering, vague requirements, missing production concerns, and bad tradeoffs directly.
 
@@ -13,7 +13,7 @@ Challenge weak ideas before turning them into plans. Call out overengineering, v
 
 1. Inspect project instructions and relevant context before asking discoverable questions.
 2. Clarify goal, users, success criteria, constraints, scope, and non-goals.
-3. Recommend a planning route and ask:
+3. Pick the planning route without asking, unless the user wants to choose:
    - Superpowers brainstorming/writing-plans for large/vague Claude Code work.
    - Custom lightweight plan for Codex, small/medium tasks, or unavailable Superpowers.
    - Custom plan + Codex review for high-risk or important decisions.
@@ -55,3 +55,7 @@ A plan is not complete until it states:
 - verification strategy
 - user-visible acceptance criteria
 - known risks or unresolved questions
+
+## Workflow state
+
+Read the work item's state file at the start and, at the end, set `stage`, `done` and `next` as described in `engineering-baseline/references/workflow-state.md`.

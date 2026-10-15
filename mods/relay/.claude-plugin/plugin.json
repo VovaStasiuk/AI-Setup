@@ -1,0 +1,1 @@
+{ "name": "relay", "version": "0.2.0", "description": "/delegate a task to a fresh implementer (watch it in a new chat or run it in the background) through TASK/RESULT files; /tasks shows progress", "types": "./types/index.d.ts" }

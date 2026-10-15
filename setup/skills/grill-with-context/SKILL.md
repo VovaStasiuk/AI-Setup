@@ -71,3 +71,7 @@ End with:
 - Open questions
 - Candidate doc updates, if any, with recommended destination
 - Recommended next route: `feature-planner`, `human-ui-designer`, `research-brief`, `implementation-agent`, or external review/handoff
+
+## Workflow state
+
+Read the work item's state file at the start and, at the end, set `stage`, `done` and `next` as described in `engineering-baseline/references/workflow-state.md`.

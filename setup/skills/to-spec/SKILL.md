@@ -69,4 +69,8 @@ Return:
 
 1. Spec draft or path written.
 2. Assumptions and open questions.
-3. Recommended next command, usually `/to-tickets` for multi-session work or `/implement` for small work.
+3. Recommended next step, usually `to-tickets` for multi-session work or `implementation-agent` for small work.
+
+## Workflow state
+
+Read the work item's state file at the start and, at the end, set `stage`, `done` and `next` as described in `engineering-baseline/references/workflow-state.md`.

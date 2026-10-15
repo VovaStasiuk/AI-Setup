@@ -1,0 +1,33 @@
+{
+  "name": "ai-setup-mods",
+  "owner": {
+    "name": "AI Setup team"
+  },
+  "plugins": [
+    {
+      "name": "house-rules",
+      "source": "./house-rules",
+      "description": "Opt-in guard: blocks git commits/pushes/branch switches, worktrees and test-DB rebuilds unless the message asks for them; no file edits on a question turn"
+    },
+    {
+      "name": "cheap-lane",
+      "source": "./cheap-lane",
+      "description": "/commit-msg (Haiku), /quick (Sonnet), /explain (Sonnet) without using the main chat"
+    },
+    {
+      "name": "relay",
+      "source": "./relay",
+      "description": "/delegate tasks (watch or background) via TASK/RESULT files; /tasks pane with delegated tasks and all open chats"
+    },
+    {
+      "name": "cockpit",
+      "source": "./cockpit",
+      "description": "One band: cache timer, size, limits, cost + handoff button; task progress with ETA; /ship checklist; clickable next steps"
+    },
+    {
+      "name": "file-guard",
+      "source": "./file-guard",
+      "description": "Asks before editing a file another open chat changed in the last 30 minutes"
+    }
+  ]
+}

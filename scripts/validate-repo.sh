@@ -349,6 +349,7 @@ for rel in "${required_example_files[@]}"; do
 done
 
 required_docs=(
+  "browser-tooling.md"
   "team-onboarding.md"
   "team-onboarding-usability-test.md"
 )
@@ -385,6 +386,9 @@ implementation_skill="$ROOT_DIR/setup/skills/implementation-agent/SKILL.md"
 required_implementation_comment_contract=(
   "history ban|Do not leave investigation history, bug narratives, before/after explanations, or change logs in code comments."
   "stable why|Use a code comment only when the code cannot clearly express a stable, non-obvious reason, invariant, external constraint, or safety requirement."
+  "clean final code|Make the final code read as if the correct implementation was written first."
+  "correction history|When correcting your own implementation, delete comments that explain the failed attempt, the correction, or why the previous version was wrong."
+  "size ceiling|Never make a comment block longer than the code it explains. A single statement gets at most one short comment line."
   "comment review|Before finishing, review every comment added or substantially changed and remove or shorten anything"
 )
 
@@ -395,6 +399,50 @@ for contract in "${required_implementation_comment_contract[@]}"; do
     ok "implementation comment contract: $contract_name"
   else
     fail "implementation-agent missing comment contract: $contract_name"
+  fi
+done
+
+baseline_implementation="$ROOT_DIR/setup/skills/engineering-baseline/references/implementation.md"
+if grep -Fq "final code should read as if the correct implementation was written first" "$baseline_implementation" &&
+  grep -Fq "a single statement gets at most one short comment line" "$baseline_implementation"; then
+  ok "engineering baseline reinforces code-comment discipline"
+else
+  fail "engineering baseline missing code-comment discipline"
+fi
+
+for bootstrap in setup/global-files/AGENTS.md setup/global-files/CLAUDE.md; do
+  if grep -Fq "final code should read as if the correct implementation was written first" "$ROOT_DIR/$bootstrap" &&
+    grep -Fq "a single statement gets at most one short comment line" "$ROOT_DIR/$bootstrap"; then
+    ok "global bootstrap reinforces code-comment discipline: $bootstrap"
+  else
+    fail "global bootstrap missing code-comment discipline: $bootstrap"
+  fi
+done
+
+required_chrome_devtools_contract=(
+  "installer option|--chrome-devtools-mcp"
+  "pinned version|CHROME_DEVTOOLS_MCP_VERSION=\"1.6.0\""
+  "isolated browser|--isolated"
+  "telemetry opt-out|--no-usage-statistics"
+  "CrUX opt-out|--no-performance-crux"
+  "README route|docs/browser-tooling.md"
+)
+
+for contract in "${required_chrome_devtools_contract[@]}"; do
+  contract_name="${contract%%|*}"
+  contract_fragment="${contract#*|}"
+  if grep -Fq -- "$contract_fragment" "$ROOT_DIR/install.sh" "$ROOT_DIR/README.md" 2>/dev/null; then
+    ok "Chrome DevTools MCP contract: $contract_name"
+  else
+    fail "Chrome DevTools MCP missing contract: $contract_name"
+  fi
+done
+
+for skill in debugging-investigator human-ui-designer implementation-agent; do
+  if grep -Fq 'chrome-devtools-mcp' "$ROOT_DIR/setup/skills/$skill/SKILL.md"; then
+    ok "Chrome DevTools MCP routing documented: $skill"
+  else
+    fail "Chrome DevTools MCP routing missing: $skill"
   fi
 done
 

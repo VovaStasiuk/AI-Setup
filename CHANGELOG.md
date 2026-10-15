@@ -1,8 +1,20 @@
 # Changelog
 
+## 0.2.0
+
+- Added workflow stages and per-work-item state (`.ai/work/<slug>/state.md`) so a session can resume and propose the next step without being re-briefed. See `engineering-baseline/references/workflow-state.md`.
+- Added the `ship` skill: lint, build, tests, review, browser check, commit message, ticket note and state update, with an explicit not-run list.
+- Added `plain-talk` and `ticket` skills; added implementation rules (touch points, root cause, keep validation, no dependency for a few lines, project components first, edge-case-correct choice, never trade away validation, security or accessibility).
+- Added Claude mods under `mods/` (`cheap-lane`, `relay`, `cockpit`, `file-guard`, opt-in `house-rules`) and `./install.sh --mods`.
+- Added the `fable-advisor` agent (`setup/claude-agents/`), installed with `--mods`.
+- Global `CLAUDE.md` / `AGENTS.md` are now written as a managed block between `<!-- ai-setup:begin -->` and `<!-- ai-setup:end -->`; text outside the block is kept on update.
+- Removed `concise-communication`, `ai-workflow-router`, `developer-orchestrator` and `/ai-workflow`. `--update` retires them from existing installs (with a backup).
+- Removed the "prefer Superpowers" routing line from the global files.
+
 ## Unreleased
 
-- Added code-comment discipline to `implementation-agent`: retain only concise, stable rationale near code and move investigation or change history to the implementation summary or durable project records.
+- Added opt-in, pinned Chrome DevTools MCP registration for Claude and Codex with isolated-browser defaults, telemetry/CrUX opt-outs, ownership-aware status checks, workflow routing, and security documentation.
+- Strengthened code-comment discipline across the global bootstraps, `engineering-baseline`, and `implementation-agent`: corrected code must contain no debugging archaeology, single statements allow at most one short comment line, and defect history belongs in tests or implementation summaries.
 - Removed the redundant `grill-me` skill and `/grill-me` command; natural-language "grill me" requests now route only to `grill-with-context`, and updates safely retire recognizable AI Setup-owned copies.
 - Strengthened `human-ui-designer` with a bounded UI/UX Pro Max-inspired intelligence pass, explicit quality priorities, motion and reduced-motion contracts, and interaction/accessibility verification requirements.
 - Added isolated installer coverage for tool/mode/profile routes, onboarding-wrapper safety contracts, local Markdown link checking in CI, a fresh-user usability protocol, and a pinned team update policy.

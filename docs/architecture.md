@@ -35,6 +35,8 @@ These files point to global skills without loading every reference.
 
 Claude also gets optional command wrappers in `~/.claude/commands`.
 
+External capabilities such as Chrome DevTools MCP are opt-in tool integrations, not profiles or core skills. They are registered per client only after a dedicated dry-run and approval. AI Setup records ownership markers separately so status checks can detect a missing registration without treating the capability as universally required.
+
 ## Project Layer
 
 Projects get a tiny local kit:

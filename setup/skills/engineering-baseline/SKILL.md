@@ -1,6 +1,6 @@
 ---
 name: engineering-baseline
-description: Use first for non-trivial software engineering, planning, implementation, review, debugging, refactoring, testing, and UI work. Provides Karpathy-inspired engineering judgment plus AI workflow hygiene: understand before changing, prefer simple scoped solutions, preserve project patterns, verify with evidence, manage context, and capture durable decisions without bloating every conversation.
+description: "Use first for non-trivial software engineering, planning, implementation, review, debugging, refactoring, testing, and UI work. Provides Karpathy-inspired engineering judgment plus AI workflow hygiene: understand before changing, prefer simple scoped solutions, preserve project patterns, verify with evidence, manage context, and capture durable decisions without bloating every conversation."
 ---
 
 # Engineering Baseline
@@ -69,9 +69,25 @@ Final responses for non-trivial work should include:
 
 If a check was not run, say it was not run. If a workflow was only partially implemented, name the missing pieces.
 
+## Workflow stages
+
+Every non-trivial piece of work moves through these stages. Know the current stage and the next one so the user does not have to explain it.
+
+| Stage | Skill | Next |
+|---|---|---|
+| idea | `grill-with-context`, `research-brief` | `domain-modeling` if terms are unclear, else `to-spec` |
+| spec | `to-spec` (or `feature-planner` for a plan) | `to-tickets` for multi-session work, else build |
+| tickets | `to-tickets`, `ticket` | first unblocked ticket |
+| build | `implementation-agent`, `tdd-seams`, `debugging-investigator` | `ship` |
+| verify and review | `ship`, `code-review-swe` | fix findings, then close |
+| close | `ship`, `project-memory-curator` | next ticket |
+
+Track the stage in `.ai/work/<slug>/state.md` (see `references/workflow-state.md`). When the user says "continue" or "next", read it and propose the next step instead of asking what to do.
+
 ## When details are needed
 
 - Planning: read `references/planning.md`.
 - Implementation: read `references/implementation.md`.
 - Review: read `references/review.md`.
 - UI/design: read `references/design.md`.
+- Stage tracking and resuming work: read `references/workflow-state.md`.
