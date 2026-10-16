@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Fixed `./install.sh --status` reporting global `CLAUDE.md` / `AGENTS.md` as stale when personal notes sit below the managed block. Status now compares only the block.
+
 ## 0.2.0
 
 - Added workflow stages and per-work-item state (`.ai/work/<slug>/state.md`) so a session can resume and propose the next step without being re-briefed. See `engineering-baseline/references/workflow-state.md`.
